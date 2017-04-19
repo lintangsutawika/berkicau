@@ -35,7 +35,81 @@ class findEntity(object):
 				    except ValueError:
 				    	break
 
+	def renameUser(self,corpus=None):
+		_new = []
+		if corpus == None:
+			corpus = self.corpus
+		
+		for _temp in corpus:
+			_temp =  re.sub( r'(^|[^@\w])@(\w{1,15})\b',' _user_ ',_temp)
+			_new.append(_temp)
+
+		return _new
+	
+	def removeEnamex(self,corpus=None):
+		_new = []
+		if corpus == None:
+			corpus = self.corpus
+			
+		for _temp in corpus:
+			_temp =  re.sub( r'</ENAMEX>','',_temp)
+			for type in Types:
+				_temp =  re.sub( r'<ENAMEX TYPE="{}">'.format(type),'',_temp)
+			_new.append(_temp)
+
+		return _new
+	
+	def removeHashtag(self, corpus=None):
+		_new = []
+		if corpus == None:
+			corpus = self.corpus
+
+		for _temp in corpus:
+			_temp = re.sub(r'#(\w+)', ' _hastag_ ', _temp)
+			_new.append(_temp)
+
+		return _new
+
+	def removeURL(self, corpus=None):
+		#https://support.twitter.com/articles/78124
+		_new = []
+		if corpus == None:
+			corpus = self.corpus
+	
+		for _temp in corpus:
+			_temp = re.sub(r'http:\S+', ' _url_ ', _temp, flags=re.MULTILINE)
+			_new.append(_temp)
+
+		return _new
+
+	def removeEmoticon(self, corpus=None):
+		#https://support.twitter.com/articles/78124
+		_new = []
+		if corpus == None:
+			corpus = self.corpus
+	
+		for _temp in corpus:
+			_temp = re.sub(r'\\x\S+', ' _url_ ', _temp)
+			_new.append(_temp)
+
+		return _new
+
+	def removeAll(self,corpus=None):
+		if corpus == None:
+			corpus = self.corpus
+		
+		_temp = self.renameUser()
+		_temp = self.removeEnamex(_temp)
+		_temp = self.removeHashtag(_temp)
+		_temp = self.removeURL(_temp)
+		_temp = self.removeEmoticon(_temp)
+		return _temp
+
+
 if __name__ == '__main__':
 	text = findEntity()
-	tweets = text.get_corpus()
-	text.find_enamex()
+	filtered = text.removeAll()
+	file = open("output.txt", "w")
+	for sentences in filtered:
+		file.write(sentences) 
+	file.close()
