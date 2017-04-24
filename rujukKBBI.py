@@ -1,19 +1,33 @@
+import urllib
 import pycurl
+import mechanize
 from StringIO import StringIO
 from bs4 import BeautifulSoup
 
 class rujukKBBI(object):
 	def __init__(self):
 		self.bufferString = StringIO() #Initialize buffer for string of html
-		self.crawler = pycurl.Curl() #Initialize curl object
+		# self.crawler = pycurl.Curl() #Initialize curl object
+		self.br = mechanize.Browser()
+
+	def login(self):
 		
+		self.br.open("https://kbbi.kemdikbud.go.id/Account/Login")
+		self.br.select_form(nr=0)
+		self.br["Posel"] = "lintang.adyuta61@ui.ac.id"
+		self.br["KataSandi"] = "nlp2017"
+		pag2 = self.br.submit()
+		html = pag2.read()
+		# print html
+
 	def cari_kata(self, kata='berkicau'):
-		self.crawler.setopt(self.crawler.URL, 'https://kbbi.kemdikbud.go.id/entri/' + kata)
-		self.crawler.setopt(self.crawler.WRITEDATA, self.bufferString)
-		self.crawler.perform()
-		self.crawler.close()
+		# self.crawler.setopt(self.crawler.URL, 'https://kbbi.kemdikbud.go.id/entri/' + kata)
+		# self.crawler.setopt(self.crawler.WRITEDATA, self.bufferString)
+		# self.crawler.perform()
+		# self.crawler.close()
 
 		html_doc = self.bufferString.getvalue()
+		html_doc = self.br.open('https://kbbi.kemdikbud.go.id/entri/'+kata)
 		soup = BeautifulSoup(html_doc, 'html.parser')
 		self.span_tags = soup.find_all('span')
 		for tags in self.span_tags:
@@ -40,7 +54,8 @@ class rujukKBBI(object):
 
 
 if __name__ == '__main__':
-	kata = "komputer"
+	kata = "lampu"
 	rujukan = rujukKBBI()
+	rujukan.login()
 	jenis = rujukan.jenis_kata(kata)
 	print("Jenis kata untuk {} adalah {}".format(kata,jenis))
