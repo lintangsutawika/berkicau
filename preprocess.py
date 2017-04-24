@@ -78,6 +78,7 @@ class findEntity(object):
 	
 		for _temp in corpus:
 			_temp = re.sub(r'http:\S+', ' _url_ ', _temp, flags=re.MULTILINE)
+			_temp = re.sub(r'https:\S+', ' _url_ ', _temp, flags=re.MULTILINE)
 			_new.append(_temp)
 
 		return _new
