@@ -40,7 +40,7 @@ class rujukKBBI(object):
 
 
 if __name__ == '__main__':
+	kata = "komputer"
 	rujukan = rujukKBBI()
-	# soup = rujukan.cari_kata()
-	a = rujukan.jenis_kata()
-	print(a)
+	jenis = rujukan.jenis_kata(kata)
+	print("Jenis kata untuk {} adalah {}".format(kata,jenis))
