@@ -10,7 +10,7 @@ class rujukKBBI(object):
 		# self.crawler = pycurl.Curl() #Initialize curl object
 		self.br = mechanize.Browser()
 
-	def login(self):
+	def login(self, username="user@mail.com", password="pass"):
 		
 		self.br.open("https://kbbi.kemdikbud.go.id/Account/Login")
 		self.br.select_form(nr=0)
@@ -51,7 +51,6 @@ class rujukKBBI(object):
 						return "JJ"
 		except TypeError:
 			return "NOTFOUND"
-
 
 if __name__ == '__main__':
 	kata = "lampu"

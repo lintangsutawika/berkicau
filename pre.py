@@ -11,6 +11,7 @@ for sentences in filtered:
 	token = nltk.wordpunct_tokenize(sentences)
 	print(token)
 	toFeed.append(token)
+	
 #Argmax distance in word to vec
 # distance.nlevenshtein(method=1)shortest alignment
 #Use for alay words
