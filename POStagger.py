@@ -19,7 +19,7 @@ class POStagger(object):
 		sentence_data = []
 		tagged_sentence = []
 		for i,each_sentence in enumerate(Segmented_pre_sentence):
-			each_word = re.split('\n',each_sentence)
+			each_word = re.split('\n',each_sentence.lower())
 			while True:
 				try:
 					each_word.pop(each_word.index(''))
@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
 	tnt_pos_tagger = tnt.TnT()
 	tnt_pos_tagger.train(train_data)
-	score = tnt_pos_tagger.evaluate(test_data1)
+	score = tnt_pos_tagger.evaluate(test_data)
 	print("Trained Model Score: {}\n".format(score))
 
 	#Save Model
