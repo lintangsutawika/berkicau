@@ -41,7 +41,7 @@ class findEntity(object):
 			corpus = self.corpus
 		
 		for _temp in corpus:
-			_temp =  re.sub( r'(^|[^@\w])@(\w{1,15})\b',' _user_ ',_temp)
+			_temp =  re.sub( r'(^|[^@\w])@(\w{1,15})\b','',_temp)
 			_new.append(_temp)
 
 		return _new
@@ -65,7 +65,7 @@ class findEntity(object):
 			corpus = self.corpus
 
 		for _temp in corpus:
-			_temp = re.sub(r'#(\w+)', ' _hastag_ ', _temp)
+			_temp = re.sub(r'#(\w+)', '', _temp)
 			_new.append(_temp)
 
 		return _new
@@ -77,8 +77,8 @@ class findEntity(object):
 			corpus = self.corpus
 	
 		for _temp in corpus:
-			_temp = re.sub(r'http:\S+', ' _url_ ', _temp, flags=re.MULTILINE)
-			_temp = re.sub(r'https:\S+', ' _url_ ', _temp, flags=re.MULTILINE)
+			_temp = re.sub(r'http:\S+', '', _temp, flags=re.MULTILINE)
+			_temp = re.sub(r'https:\S+', '', _temp, flags=re.MULTILINE)
 			_new.append(_temp)
 
 		return _new
@@ -86,14 +86,19 @@ class findEntity(object):
 	def removeEmoticon(self, corpus=None):
 		#https://support.twitter.com/articles/78124
 		_new = []
+		emoticons_str = r"(?:[:=;B][oO\-]?[D\)\]\(\]/\\OpP])"
+
 		if corpus == None:
 			corpus = self.corpus
 	
 		for _temp in corpus:
-			_temp = re.sub(r'\\x\S+', ' _url_ ', _temp)
+			_temp = re.sub(emoticons_str, '', _temp)
 			_new.append(_temp)
 
 		return _new
+
+	def removeSingleLetter(self, corpus=None):
+		pass
 
 	def removeAll(self,corpus=None):
 		if corpus == None:
