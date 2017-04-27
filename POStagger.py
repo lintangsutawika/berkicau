@@ -37,14 +37,14 @@ class POStagger(object):
 
 		return sentence_data
 
-	def save_model(self, object=tnt_pos_tagger, path="tnt_pos_tagger.pic"):
-		cPickle.dump( object, open( path, "wb" ))
+	def save_model(self, taggerObject, path="tnt_pos_tagger.pic"):
+		cPickle.dump( taggerObject, open( path, "wb" ))
 
 	def restore_model(self, path="tnt_pos_tagger.pic"):
 		object_path = open("tnt_pos_tagger.pic", 'r')
 		tag_object = cPickle.Unpickler(object_path)
 		tagger = tag_object.load()
-		tagger_path.close()
+		object_path.close()
 
 		return tagger
 	
