@@ -1,39 +1,40 @@
 import re
 
-Types = ["PERSON","LOCATION","ORGANIZATION"]
-person = []
-location = []
-organization = []
-typeDicts = {
-	"PERSON":person,
-	"LOCATION":location,
-	"ORGANIZATION":organization
-	}
-
 class findEntity(object):
 	"""docstring for findEntity"""
 	def __init__(self, dir="./Training/",filename="training_data_new.txt"):
 		self.corpus = re.split('\r\n',open(dir+filename, "rb").read())
 		self.corpus.pop(-1)
-		
+
 	def get_corpus(self):
 		return self.corpus
 
 	def find_enamex(self, corpus=None):
+		self.Types = ["PERSON","LOCATION","ORGANIZATION"]
+		self.person = []
+		self.location = []
+		self.organization = []
+		self.typeDicts = {
+			"PERSON":self.person,
+			"LOCATION":self.location,
+			"ORGANIZATION":self.organization
+			}		
+		
 		if corpus== None:
 			corpus = self.corpus
 
-		for type in Types:
+		for type in self.Types:
 			start_string = "<ENAMEX TYPE=\"{}\">".format(type)
 			for _temp in corpus:
 				while True:
 				    try:
 	   					start = _temp.index(start_string) + len(start_string)
 	   					end = start+_temp[start:].index("</ENAMEX>")
-						typeDicts["{}".format(type)].append(_temp[start:end])
+						self.typeDicts["{}".format(type)].append(_temp[start:end])
 						_temp = _temp[end+len("</ENAMEX>"):]
 				    except ValueError:
 				    	break
+		return [self.person, self.location, self.organization]
 
 	def renameUser(self,corpus=None):
 		_new = []
@@ -99,6 +100,20 @@ class findEntity(object):
 
 	def removeSingleLetter(self, corpus=None):
 		pass
+
+	def removeRepeatLetter(self, corpus=None):
+		_new = []
+		if corpus == None:
+			corpus = self.corpus
+
+		for _temp in corpus:
+			repeats = re.findall(r'((\w)\2{1,})', _temp)
+			for repeatGroup in repeats:
+				_temp = re.sub(repeatGroup[0], repeatGroup[1], _temp)
+			
+			_new.append(_temp)
+
+		return _new
 
 	def removeAll(self,corpus=None):
 		if corpus == None:
