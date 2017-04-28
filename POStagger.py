@@ -60,7 +60,7 @@ if __name__ == '__main__':
 	print("Trained Model Score: {}\n".format(score))
 
 	#Save Model
-	posTagger.save_model()
+	posTagger.save_model(tnt_pos_tagger)
 
 	loaded_tagger = posTagger.restore_model()
 	
