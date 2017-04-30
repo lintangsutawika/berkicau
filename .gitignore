@@ -1,0 +1,10 @@
+#File Extensions
+*.pyc
+*.pic
+
+#Login Credential
+kbbi_login
+twitter_credential
+
+#Folders
+moreTweets/*
