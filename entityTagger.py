@@ -1,26 +1,51 @@
 import re
 import nltk
 import POStagger
-import preprocess
+from preprocess import findEntity
 import numpy as np
-import tensorflow as tf
-
+import gensim
+import csv 
 #Load Trained Tagger 
 posTagger = POStagger.POStagger()
 tnt = posTagger.restore_model()
 
 #Tokenization
-text = preprocess.findEntity()
-filtered = text.removeAll()
+# text = preprocess.findEntity()
+# filtered = text.removeAll()
+# toFeed = []
+# for sentences in filtered:
+# 	token = nltk.wordpunct_tokenize(sentences.lower())
+# 	toFeed.append(token)
+	
+# tags = tnt.tag(toFeed[0])
+# for tag in tags:
+# 	if tag
+text = findEntity()
+tags, data = text.corpus2BIO()
 toFeed = []
-for sentences in filtered:
+for eachSentence in data:
+	toFeed.append(eachSentence)
+
+#Gain large corpus
+rawSentence = []
+with open("Training/MoreTweets.tsv", 'rU') as csvfile:
+	spamreader = csv.reader(csvfile, delimiter='\n', quotechar='|')
+	for spam in spamreader:
+		rawSentence.append(spam)
+
+corpusSentence =[]
+for individualSentence in rawSentence:
+	if individualSentence == []:
+		pass
+	else:
+		corpusSentence.append(individualSentence[0])
+
+for sentences in corpusSentence:
 	token = nltk.wordpunct_tokenize(sentences.lower())
 	toFeed.append(token)
-	
-tags = tnt.tag(toFeed[0])
-for tag in tags:
-	if tag
 
+corpusTweet = toFeed
+model = gensim.models.Word2Vec(corpusTweet, min_count=1,  size=50)
 #Stemming
 
 #While there are consecutives NNP, make that inot 1 entity
@@ -49,6 +74,7 @@ for tag in tags:
 #Observations
 #-Tanda titik dua sering kali menjadi penanda quote sehingga frase yang mendahului titik dua sering kali adalah orang, i.e Jokowi dst
 #-Jalan bisa jadi "Jl." atau "Jln." atau "jln." dan "jl." atau "Jalan" "jl" "Jl"
+sentence = []
 Jalanan = ["Jl", "jl", "JL", "Jln", "jln", "JLN"]
 nama_jalan = []
 for kata_jalan in Jalanan:
