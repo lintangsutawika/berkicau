@@ -53,7 +53,7 @@ class rujukKBBI(object):
 			return "NOTFOUND"
 
 if __name__ == '__main__':
-	kata = "lampu"
+	kata = "menelpon"
 	rujukan = rujukKBBI()
 	rujukan.login()
 	jenis = rujukan.jenis_kata(kata)
