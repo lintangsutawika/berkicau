@@ -5,21 +5,17 @@ from preprocess import findEntity
 import numpy as np
 import gensim
 import csv 
+from sklearn.model_selection import KFold
+from Bi_LSTM import BiLSTM_CRF
+import torch
+import torch.autograd as autograd
+import torch.nn as nn
+import torch.optim as optim
+
 #Load Trained Tagger 
 posTagger = POStagger.POStagger()
 tnt = posTagger.restore_model()
 
-#Tokenization
-# text = preprocess.findEntity()
-# filtered = text.removeAll()
-# toFeed = []
-# for sentences in filtered:
-# 	token = nltk.wordpunct_tokenize(sentences.lower())
-# 	toFeed.append(token)
-	
-# tags = tnt.tag(toFeed[0])
-# for tag in tags:
-# 	if tag
 text = findEntity()
 tags, data = text.corpus2BIO()
 toFeed = []
@@ -45,9 +41,54 @@ for sentences in corpusSentence:
 	toFeed.append(token)
 
 corpusTweet = toFeed
-model = gensim.models.Word2Vec(corpusTweet, min_count=1,  size=50)
+word2vec = gensim.models.Word2Vec(corpusTweet, min_count=1,  size=50)
 #Stemming
+START_TAG = "<START>"
+STOP_TAG = "<STOP>"
+EMBEDDING_DIM = 50
+HIDDEN_DIM = 40
 
+tag_to_ix = {"None": 0, "I-LOC": 1, "I-ORG": 2, "I-PER":3, START_TAG: 4, STOP_TAG: 5}
+
+model = BiLSTM_CRF(100, tag_to_ix, EMBEDDING_DIM, HIDDEN_DIM)
+optimizer = optim.SGD(model.parameters(), lr=0.01, weight_decay=1e-4)
+
+kf = KFold(n_splits=5)
+for train_index, test_index in kf.split(data):
+	X_train, X_test = np.asarray(data)[train_index], np.asarray(data)[test_index]
+	y_train, y_test = np.asarray(tags)[train_index], np.asarray(tags)[test_index]
+
+	# model.wv['computer']
+	# Make sure prepare_sequence from earlier in the LSTM section is loaded
+	for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
+	    for index,sentenceTrain in enumerate(X_train):
+	        # Step 1. Remember that Pytorch accumulates gradients.
+	        # We need to clear them out before each instance
+	        model.zero_grad()
+
+	        # Step 2. Get our inputs ready for the network, that is,
+	        # turn them into Variables of word indices.
+	        embedded_sentence = torch.from_numpy(np.asarray([word2vec.wv[w] for w in sentenceTrain]))
+	        targets = torch.LongTensor([t for t in y_train[index]])
+
+	        # Step 3. Run our forward pass.
+	        neg_log_likelihood = model.neg_log_likelihood(autograd.Variable(embedded_sentence), targets)
+	        print("Epoch: {}, sentence_ind: {}, neg_log: {}".format(epoch, index, neg_log_likelihood))
+	        # Step 4. Compute the loss, gradients, and update the parameters by
+	        # calling optimizer.step()
+	        neg_log_likelihood.backward()
+	        optimizer.step()
+
+	    for index,testTrain in enumerate(X_test):
+			embedded_sentence = torch.from_numpy(np.asarray([word2vec.wv[w] for w in testTrain]))
+			printSentence = ""
+			for w in testTrain:
+				printSentence = printSentence + " " + w
+			targets = torch.LongTensor([t for t in y_test[index]])
+			output = model(autograd.Variable(embedded_sentence))[1]
+			print("Sentence:\n{}\nTag:\n{}\nPredict:\n{}".format(printSentence, targets.numpy(), np.asarray(output)))
+
+# We got it!
 #While there are consecutives NNP, make that inot 1 entity
 #if a[i][1] = NNP
 #while a[i][1] == "NNP":
@@ -65,39 +106,9 @@ model = gensim.models.Word2Vec(corpusTweet, min_count=1,  size=50)
 #3 TRAINING DATA changed to Entity of No entity
 #4 Output dcoument that prints word as an entity of not
 
-#Model Goes through 2 stages of NER
-#1 Machine Learning
-#2 Rule Based filtering
-#3 Final tagging (Determine whether a tag is loc, org, or person) Rule based as well
-
-
-#Observations
-#-Tanda titik dua sering kali menjadi penanda quote sehingga frase yang mendahului titik dua sering kali adalah orang, i.e Jokowi dst
-#-Jalan bisa jadi "Jl." atau "Jln." atau "jln." dan "jl." atau "Jalan" "jl" "Jl"
-sentence = []
-Jalanan = ["Jl", "jl", "JL", "Jln", "jln", "JLN"]
-nama_jalan = []
-for kata_jalan in Jalanan:
-	if any(kata_jalan in word for word in sentence) == True:
-		break
-#
-#News data => Use trigram
-#Alay data => Word2Vec
-#Use u.screen_name to get screen_name
-# for page in tweepy.Cursor(api.followers_ids, screen_name="lintangsutawika").pages():
-	# ids.extend(page)
-	# time.sleep(60)
-#Coocurance
-
-#KBBI curl function
-# https://kbbi.kemdikbud.go.id/entri
-#Di, nya - cut function
-#di + unk, mostlikely a place
-#Pada berita, kata kerja yang dipakai tidak berimbuhan
-
 #Evaluation
-yPerson, yLocation, yOrganization = text.find_enamex(corpus=test_corpus)
-yPred_Person, yPred_Location, yPred_Organization = text.find_enamex(corpus=predicted_corpus)
+# yPerson, yLocation, yOrganization = text.find_enamex(corpus=test_corpus)
+# yPred_Person, yPred_Location, yPred_Organization = text.find_enamex(corpus=predicted_corpus)
 
 true_positive = 0
 true_negative = 0
