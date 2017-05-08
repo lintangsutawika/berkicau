@@ -7,10 +7,11 @@ import time
 import sys
 
 #Twitter API credentials
-consumer_key = sys.argv[1]
-consumer_secret = sys.argv[2]
-access_key = sys.argv[3]
-access_secret = sys.argv[4]
+username = sys.argv[1]
+consumer_key = sys.argv[2]
+consumer_secret = sys.argv[3]
+access_key = sys.argv[4]
+access_secret = sys.argv[5]
 
 class tweetRetrieval(object):
 	"""docstring for tweetRetrieval"""
@@ -64,7 +65,7 @@ class tweetRetrieval(object):
 			
 			print "...%s tweets downloaded so far" % (len(alltweets))
 		
-		with open(usernamePath, 'r') as usernameFile:
+		# with open(usernamePath, 'r') as usernameFile:
 
 
 		#write the csv
@@ -81,20 +82,39 @@ class tweetRetrieval(object):
 			usernameFile.close()
 		pass
 
-
 if __name__ == '__main__':
 
 	tweet = tweetRetrieval(consumer_key, consumer_secret, access_key, access_secret)
-	tweet.get_all_tweets("lintangsutawika")
+	tweet.get_all_tweets(username)
+	ids = []
+	initialUser = username
+	maxFollowers = 150000
+	
+	while(True):
+		try:
+			for i,items in enumerate(tweepy.Cursor(tweet.api.followers_ids, screen_name=initialUser).items(maxFollowers)):
+				print("{}, {}".format(i,items))
+				ids.append(items)
+				# if i == maxFollowers:
+					# break
+		except:
+			print("waiting 15minutes")
+			break
+			# time.sleep(60 * 15)
 
-		i = 0
-		while(True):
-			try:    
-				for i in range(i,len(ids)):
-					u = api.get_user(ids[i])
-					print(u.screen_name)
-					get_all_tweets(u.screen_name)
-			except:
+			
+
+	i = 0
+	while(True):
+		try:    
+			for i in range(i,len(ids)):
+				u = api.get_user(ids[i])
+				print(u.screen_name)
+				get_all_tweets(u.screen_name)
+		except:
+			if i == len(ids):
+				break
+			else:
 				i = i + 1
 				print("Cannot be pulled")
 
