@@ -69,7 +69,7 @@ class findEntity(object):
         for _temp in corpus:
             _temp =  re.sub( r'</ENAMEX>',' _ENAMEX ',_temp)
             for type in self.Types:
-                _temp =  re.sub( r'<ENAMEX TYPE=\"{}\">'.format(type),'TYPE_{}_ '.format(type),_temp)
+                _temp =  re.sub( r'<ENAMEX TYPE=\"{}\">'.format(type),'TYPE_{}_'.format(type),_temp)
             _new.append(_temp)
 
         return _new
@@ -101,13 +101,14 @@ class findEntity(object):
     def removeEmoticon(self, corpus=None):
         #https://support.twitter.com/articles/78124
         _new = []
-        emoticons_str = r"(?:[:=;B\-][oO\_\-]?[\-D\)\]\(\]/\\OpP3])"
+        emoticons_str = r"(?:[:=;B\-][oO\"\_\-]?[\-D\)\]\(\]/\\Op3]{2,3})"
 
         if corpus == None:
             corpus = self.corpus
     
         for _temp in corpus:
             _temp = re.sub(emoticons_str, '', _temp)
+            _temp = re.sub(r'[^\x00-\x7F]', '', _temp)
             _new.append(_temp)
 
         return _new
@@ -153,7 +154,7 @@ class findEntity(object):
         _temp = self.removeEmoticon(_temp)
         return _temp
 
-    def corpus2BIO(self, corpus=None):
+    def corpus2BIO(self, mode="withIntermediate" ,corpus=None):
         if corpus== None:
             corpus = self.corpus
 
@@ -163,6 +164,17 @@ class findEntity(object):
         _temp = self.removeEmoticon(_temp)
         _temp = self.addSpacingEnamex(_temp)
 
+        #Tagging index
+        #"None"     : 0, 
+        #"B-LOC"    : 1, 
+        #"I-LOC"    : 2,
+        #"B-ORG"    : 3, 
+        #"I-ORG"    : 4,
+        #"B-PER"    : 5,          
+        #"I-PER"    : 6, 
+        #START_TAG  : 7, 
+        #STOP_TAG   : 8
+
         tags = []
         dataset = []
         for sentences in _temp:
@@ -171,33 +183,33 @@ class findEntity(object):
             
             tagSentence = []
             for index, words in enumerate(tempSentence):
+                # print(words)
                 if "type_person_" in words:
-                    tempSentence[index] =  re.sub( "type_person_",'',words)
                     tagSentence.append(1)
+                    tempSentence[index] = re.sub( "type_person_",'',words)
                 elif "type_location_" in words:
-                    tempSentence[index] =  re.sub( "type_location_",'',words)
-                    tagSentence.append(2)
-                elif "type_organization_" in words:
-                    tempSentence[index] =  re.sub( "type_organization_",'',words)
                     tagSentence.append(3)
+                    tempSentence[index] = re.sub( "type_location_",'',words)
+                elif "type_organization_" in words:
+                    tagSentence.append(5)
+                    tempSentence[index] = re.sub( "type_organization_",'',words)
                 elif index>0 and tempSentence[index-1]=="_enamex" and ("type_person_" not in words or "type_location_" not in words or "type_organization_" not in words):
                     tagSentence.append(0)
-                    # tempSentence.pop(tempSentence.index("_enamex"))
-                    # tempSentence[index-1] = re.sub( "</enamex>",'',tempSentence[index-1])
-                elif index>0 and tagSentence[index-1] != 0:# and "</enamex>"!=tempSentence[index+1]: 
-                    tagSentence.append(tagSentence[index-1])
+                elif index>0 and tagSentence[index-1] != 0:
+                    if mode=="withIntermediate":
+                        if tagSentence[index-1] == 1 or tagSentence[index-1] == 2:
+                            tagSentence.append(2)
+                        elif tagSentence[index-1] == 3 or tagSentence[index-1] == 4:
+                            tagSentence.append(4)
+                        elif tagSentence[index-1] == 5 or tagSentence[index-1] == 6:
+                            tagSentence.append(6)
+                    else:
+                        tagSentence.append(tagSentence[index-1])
                 elif index==0:
                     tagSentence.append(0)
                 else:
                     tagSentence.append(0)
 
-
-                # tempSentence[index-1] = re.sub( "</enamex>",'',tempSentence[index-1])
-                #       tagSentence.append(0)
-                # elif "</enamex>" in words:
-                #   tempSentence[index] =  re.sub( "</enamex>",'',words)
-                    # if index > 0:
-                        # tagSentence.append(tagSentence[index-1])
             while True:
                 if '' in tempSentence:
                     ind = tempSentence.index('')
@@ -217,18 +229,6 @@ class findEntity(object):
             tags.append(tagSentence)
             dataset.append(tempSentence)
         return [tags, dataset]
-                    #   else:
-                    # if index == 0:
-                    #   tagSentence.append(0)
-                    # elif tagSentence[index-1] != 0 and ("</ENAMEX>" in tagSentence[index-1]):
-                    #   tagSentence.append(tagSentence[index-1])
-                    # else:
-                    #   tagSentence.append(0)                       
-        #TagSET
-        #None :0
-        #I-LOC:1
-        #I-ORG:2
-        #I-PER:3
 
 
 if __name__ == '__main__':
