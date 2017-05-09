@@ -31,6 +31,18 @@ def log_sum_exp(vec):
     return max_score + \
         torch.log(torch.sum(torch.exp(vec - max_score_broadcast)))
 
+def exp_lr_scheduler(optimizer, epoch, init_lr=0.1, lr_decay_epoch=100):
+    """Decay learning rate by a factor of 0.1 every lr_decay_epoch epochs."""
+    lr = init_lr * (0.1**(epoch // lr_decay_epoch))
+
+    if epoch % lr_decay_epoch == 0:
+        print('LR is set to {}'.format(lr))
+
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+
+    return optimizer
+
 class BiLSTM_CRF(nn.Module):
 
     def __init__(self, vocab_size, tag_to_ix, embedding_dim, hidden_dim):
@@ -42,8 +54,7 @@ class BiLSTM_CRF(nn.Module):
         self.tagset_size = len(tag_to_ix)
 
         self.word_embeds = nn.Embedding(vocab_size, embedding_dim)
-        self.lstm = nn.LSTM(embedding_dim, hidden_dim // 2,
-                            num_layers=10, bidirectional=True)
+        self.lstm = nn.LSTM(embedding_dim, hidden_dim // 2, num_layers=10, bidirectional=True)
 
         # Maps the output of the LSTM into tag space.
         self.hidden2tag = nn.Linear(hidden_dim, self.tagset_size)
@@ -167,4 +178,5 @@ class BiLSTM_CRF(nn.Module):
 
         # Find the best path, given the features.
         score, tag_seq = self._viterbi_decode(lstm_feats)
+        # print(score)
         return score, tag_seq
