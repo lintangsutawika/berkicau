@@ -1,3 +1,7 @@
+import glob
+import logging
+import logging.handlers
+
 import re
 import nltk
 import POStagger
@@ -6,11 +10,19 @@ import numpy as np
 import gensim
 import csv 
 from sklearn.model_selection import KFold
+import Bi_LSTM
 from Bi_LSTM import BiLSTM_CRF
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
 import torch.optim as optim
+
+LOG_FILENAME = 'NER_logging.out'
+# Set up a specific logger with our desired output level
+# logging = logging.getLogger('logging')
+logging.basicConfig(filemode = 'a', level=logging.DEBUG, filename=LOG_FILENAME)
+
+use_gpu = torch.cuda.is_available()
 
 #Load Trained Tagger 
 posTagger = POStagger.POStagger()
@@ -20,86 +32,103 @@ text = findEntity()
 tags, data = text.corpus2BIO()
 toFeed = []
 for eachSentence in data:
-	toFeed.append(eachSentence)
+    toFeed.append(eachSentence)
 
 #Gain large corpus
 rawSentence = []
 with open("Training/MoreTweets.tsv", 'rU') as csvfile:
-	spamreader = csv.reader(csvfile, delimiter='\n', quotechar='|')
-	for spam in spamreader:
-		rawSentence.append(spam)
+    spamreader = csv.reader(csvfile, delimiter='\n', quotechar='|')
+    for spam in spamreader:
+        rawSentence.append(spam)
 
 corpusSentence =[]
 for individualSentence in rawSentence:
-	if individualSentence == []:
-		pass
-	else:
-		corpusSentence.append(individualSentence[0])
+    if individualSentence == []:
+        pass
+    else:
+        corpusSentence.append(individualSentence[0])
 
 for sentences in corpusSentence:
-	token = nltk.wordpunct_tokenize(sentences.lower())
-	toFeed.append(token)
+    token = nltk.wordpunct_tokenize(sentences.lower())
+    toFeed.append(token)
 
 corpusTweet = toFeed
-word2vec = gensim.models.Word2Vec(corpusTweet, min_count=1,  size=50)
+word2vec = gensim.models.Word2Vec(corpusTweet, min_count=1,  size=100)
+
 #Stemming
 START_TAG = "<START>"
 STOP_TAG = "<STOP>"
-EMBEDDING_DIM = 50
-HIDDEN_DIM = 40
-
+EMBEDDING_DIM = 100
+HIDDEN_DIM = 50
 tag_to_ix = {"None": 0, "I-LOC": 1, "I-ORG": 2, "I-PER":3, START_TAG: 4, STOP_TAG: 5}
 
 model = BiLSTM_CRF(100, tag_to_ix, EMBEDDING_DIM, HIDDEN_DIM)
-optimizer = optim.SGD(model.parameters(), lr=0.01, weight_decay=1e-4)
+optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-4, momentum=0.9, nesterov=True)
 
 kf = KFold(n_splits=5)
-for train_index, test_index in kf.split(data):
-	X_train, X_test = np.asarray(data)[train_index], np.asarray(data)[test_index]
-	y_train, y_test = np.asarray(tags)[train_index], np.asarray(tags)[test_index]
+for nFold, (train_index, test_index) in enumerate(kf.split(data)):
+    X_train, X_test = np.asarray(data)[train_index], np.asarray(data)[test_index]
+    y_train, y_test = np.asarray(tags)[train_index], np.asarray(tags)[test_index]
 
-	# model.wv['computer']
-	# Make sure prepare_sequence from earlier in the LSTM section is loaded
-	for epoch in range(10):  # again, normally you would NOT do 300 epochs, it is toy data
-	    for index,sentenceTrain in enumerate(X_train):
-	        # Step 1. Remember that Pytorch accumulates gradients.
-	        # We need to clear them out before each instance
-	        model.zero_grad()
+    # Make sure prepare_sequence from earlier in the LSTM section is loaded
+    for epoch in range(500):  # again, normally you would NOT do 300 epochs, it is toy data
+        totalLoss = 0
+        #Make in to batch of 10?
+        for index,sentenceTrain in enumerate(X_train):
+            optimizer = Bi_LSTM.exp_lr_scheduler(optimizer, epoch)
+            # Step 1. Remember that Pytorch accumulates gradients.
+            # We need to clear them out before each instance
+            model.zero_grad()
 
-	        # Step 2. Get our inputs ready for the network, that is,
-	        # turn them into Variables of word indices.
-	        embedded_sentence = torch.from_numpy(np.asarray([word2vec.wv[w] for w in sentenceTrain]))
-	        targets = torch.LongTensor([t for t in y_train[index]])
+            # Step 2. Get our inputs ready for the network, that is,
+            # turn them into Variables of word indices.
+            embedded_sentence = torch.from_numpy(np.asarray([word2vec.wv[w] for w in sentenceTrain]))
+            targets = torch.LongTensor([t for t in y_train[index]])
 
-	        # Step 3. Run our forward pass.
-	        neg_log_likelihood = model.neg_log_likelihood(autograd.Variable(embedded_sentence), targets)
-	        print("Epoch: {}, sentence_ind: {}, neg_log: {}".format(epoch, index, neg_log_likelihood))
-	        # Step 4. Compute the loss, gradients, and update the parameters by
-	        # calling optimizer.step()
-	        neg_log_likelihood.backward()
-	        optimizer.step()
+            # if use_gpu:
+            #     inputs, labels = autograd.Variable(embedded_sentence.cuda()), autograd.Variable(targets.cuda())
+            # else:
+            inputs, labels = autograd.Variable(embedded_sentence), autograd.Variable(targets)
+            # Step 3. Run our forward pass.
+            neg_log_likelihood = model.neg_log_likelihood(inputs, targets)
+            totalLoss += neg_log_likelihood
+            
+            Log = "nFold: {}, Epoch: {}, sentence_ind: {}, neg_log: {}\n".format(nFold, epoch, index, neg_log_likelihood[0])
+            print(Log)
+            logging.debug(Log)
+            # Step 4. Compute the loss, gradients, and update the parameters by
+            # calling optimizer.step()
+            neg_log_likelihood.backward()
+            optimizer.step()
 
-	    for index,testTrain in enumerate(X_test):
-			embedded_sentence = torch.from_numpy(np.asarray([word2vec.wv[w] for w in testTrain]))
-			printSentence = ""
-			for w in testTrain:
-				printSentence = printSentence + " " + w
-			targets = torch.LongTensor([t for t in y_test[index]])
-			output = model(autograd.Variable(embedded_sentence))[1]
-			print("Sentence:\n{}\nTag:\n{}\nPredict:\n{}".format(printSentence, targets.numpy(), np.asarray(output)))
 
+        print("Loss for this Epoch: {}".format(totalLoss/np.shape(X_train)[0]))
+        confusionMatrix = np.zeros([4,4])
+        for index,testTrain in enumerate(X_test):
+            embedded_sentence = torch.from_numpy(np.asarray([word2vec.wv[w] for w in testTrain]))
+            printSentence = ""
+            for w in testTrain:
+                printSentence = printSentence + " " + w
+
+            targets = torch.LongTensor([t for t in y_test[index]]).numpy()
+            output = np.asarray(model(autograd.Variable(embedded_sentence))[1])
+            for indices, tag in enumerate(targets):
+                confusionMatrix[tag, output[indices]] += 1 
+            # print("Sentence:\n{}\nTag:\n{}\nPredict:\n{}".format(printSentence, targets.numpy(), np.asarray(output)))
+            print("Sentence:\n{}\nTag:\n{}\nPredict:\n{}".format(printSentence, targets, output))
+        
 # We got it!
 #While there are consecutives NNP, make that inot 1 entity
 #if a[i][1] = NNP
 #while a[i][1] == "NNP":
-#	
+#   
 #Argmax distance in word to vec
 # distance.nlevenshtein(method=1)shortest alignment
 #Use for alay words
 #People
-#	-Public figures
-#	-Names
-#	-Characters
+#   -Public figures
+#   -Names
+#   -Characters
 
 #1 MORE DATA FOR WORD EMBEDDING
 #2 BI-LSTM
@@ -116,22 +145,22 @@ false_positive = 0
 false_negative = 0
 
 for predictions in yPred_Person:
-	if (predictions in yPerson) == True:
-		true_positive += 1
-	else:
-		false_positive +=1
+    if (predictions in yPerson) == True:
+        true_positive += 1
+    else:
+        false_positive +=1
 
 for predictions in yPred_Location:
-	if (predictions in yLocation) == True:
-		true_positive += 1
-	else:
-		false_positive +=1
+    if (predictions in yLocation) == True:
+        true_positive += 1
+    else:
+        false_positive +=1
 
 for predictions in yPred_Organization:
-	if (predictions in yOrganization) == True:
-		true_positive += 1
-	else:
-		false_positive +=1
+    if (predictions in yOrganization) == True:
+        true_positive += 1
+    else:
+        false_positive +=1
 
 false_negative = (len(yPerson) + len(yLocation) + len(yOrganization)) - true_positive
 
