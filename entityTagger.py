@@ -16,6 +16,7 @@ import torch
 import torch.autograd as autograd
 import torch.nn as nn
 import torch.optim as optim
+from datasetNER import datasetNER
 
 LOG_FILENAME = 'NER_logging.out'
 # Set up a specific logger with our desired output level
@@ -29,14 +30,14 @@ posTagger = POStagger.POStagger()
 tnt = posTagger.restore_model()
 
 text = findEntity()
-tags, data = text.corpus2BIO()
+data, tags = text.corpus2BIO(mode="withIntermediate")
 toFeed = []
 for eachSentence in data:
     toFeed.append(eachSentence)
 
 #Gain large corpus
 rawSentence = []
-with open("Training/MoreTweets.tsv", 'rU') as csvfile:
+with open("Datasets/MoreTweets.tsv", 'rU') as csvfile:
     spamreader = csv.reader(csvfile, delimiter='\n', quotechar='|')
     for spam in spamreader:
         rawSentence.append(spam)
@@ -47,6 +48,8 @@ for individualSentence in rawSentence:
         pass
     else:
         corpusSentence.append(individualSentence[0])
+
+corpusSentence = text.removeAll(corpusSentence)
 
 for sentences in corpusSentence:
     token = nltk.wordpunct_tokenize(sentences.lower())
@@ -60,7 +63,8 @@ START_TAG = "<START>"
 STOP_TAG = "<STOP>"
 EMBEDDING_DIM = 100
 HIDDEN_DIM = 50
-tag_to_ix = {"None": 0, "I-LOC": 1, "I-ORG": 2, "I-PER":3, START_TAG: 4, STOP_TAG: 5}
+# tag_to_ix = {"None": 0, "I-LOC": 1, "I-ORG": 3, "I-PER":5, START_TAG: 7, STOP_TAG: 8} #Version 1
+tag_to_ix = {"None": 0, "B-LOC":1, "I-LOC":2, "B-ORG":3, "I-ORG":4, "B-PER":5, "I-PER": 6, START_TAG:7, STOP_TAG:8} #Version 2
 
 model = BiLSTM_CRF(100, tag_to_ix, EMBEDDING_DIM, HIDDEN_DIM)
 optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-4, momentum=0.9, nesterov=True)
@@ -72,38 +76,49 @@ for nFold, (train_index, test_index) in enumerate(kf.split(data)):
 
     # Make sure prepare_sequence from earlier in the LSTM section is loaded
     for epoch in range(500):  # again, normally you would NOT do 300 epochs, it is toy data
-        totalLoss = 0
+        
         #Make in to batch of 10?
-        for index,sentenceTrain in enumerate(X_train):
-            optimizer = Bi_LSTM.exp_lr_scheduler(optimizer, epoch)
-            # Step 1. Remember that Pytorch accumulates gradients.
-            # We need to clear them out before each instance
-            model.zero_grad()
+        # dsets = {'train':tnt.dataset.ListDataset(datasetNER()),
+        #          'val'  :val}
 
-            # Step 2. Get our inputs ready for the network, that is,
-            # turn them into Variables of word indices.
-            embedded_sentence = torch.from_numpy(np.asarray([word2vec.wv[w] for w in sentenceTrain]))
-            targets = torch.LongTensor([t for t in y_train[index]])
+        # dset_loaders = {x: torch.utils.data.DataLoader(dsets[x], batch_size=5,shuffle=True, num_workers=4) for x in ['train', 'val']}
+        # wordData = 
+        batchX = np.array_split(X_train, 6)
+        batchY = np.array_split(y_train, 6)
+        for batchInd,batchElement in enumerate(batchX):
+            totalLoss = 0
+            for index,sentenceTrain in enumerate(batchElement): #dsets_loaders['train']
+                optimizer = Bi_LSTM.exp_lr_scheduler(optimizer, epoch)
+                # Step 1. Remember that Pytorch accumulates gradients.
+                # We need to clear them out before each instance
+                model.zero_grad()
 
-            # if use_gpu:
-            #     inputs, labels = autograd.Variable(embedded_sentence.cuda()), autograd.Variable(targets.cuda())
-            # else:
-            inputs, labels = autograd.Variable(embedded_sentence), autograd.Variable(targets)
-            # Step 3. Run our forward pass.
-            neg_log_likelihood = model.neg_log_likelihood(inputs, targets)
-            totalLoss += neg_log_likelihood
-            
-            Log = "nFold: {}, Epoch: {}, sentence_ind: {}, neg_log: {}\n".format(nFold, epoch, index, neg_log_likelihood[0])
-            print(Log)
-            logging.debug(Log)
-            # Step 4. Compute the loss, gradients, and update the parameters by
+                # Step 2. Get our inputs ready for the network, that is,
+                # turn them into Variables of word indices.
+                embedded_sentence = torch.from_numpy(np.asarray([word2vec.wv[w] for w in sentenceTrain]))
+                targets = torch.LongTensor([t for t in batchY[batchInd][index]])
+
+                # if use_gpu:
+                #     inputs, labels = autograd.Variable(embedded_sentence.cuda()), autograd.Variable(targets.cuda())
+                # else:
+                inputs, labels = autograd.Variable(embedded_sentence), autograd.Variable(targets)
+                # Step 3. Run our forward pass.
+                neg_log_likelihood = model.neg_log_likelihood(inputs, targets) #/batchSize
+                totalLoss += neg_log_likelihood
+                
+                Log = "nFold: {}, Epoch: {}, Batch: {}, sentence_ind: {}, neg_log: {}\n".format(nFold, epoch, batchInd, index, neg_log_likelihood[0])
+                print(Log)
+                logging.debug(Log)
+                # Step 4. Compute the loss, gradients, and update the parameters by
             # calling optimizer.step()
-            neg_log_likelihood.backward()
+            totalLoss = totalLoss/16
+            totalLoss.backward()
+            # neg_log_likelihood.backward()
             optimizer.step()
 
 
         print("Loss for this Epoch: {}".format(totalLoss/np.shape(X_train)[0]))
-        confusionMatrix = np.zeros([4,4])
+        confusionMatrix = np.zeros([7,7])
         for index,testTrain in enumerate(X_test):
             embedded_sentence = torch.from_numpy(np.asarray([word2vec.wv[w] for w in testTrain]))
             printSentence = ""
