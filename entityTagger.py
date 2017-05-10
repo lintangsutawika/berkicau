@@ -1,7 +1,7 @@
 import glob
 import logging
 import logging.handlers
-
+import sys
 import re
 import nltk
 import POStagger
@@ -17,6 +17,16 @@ import torch.autograd as autograd
 import torch.nn as nn
 import torch.optim as optim
 from datasetNER import datasetNER
+
+def printProgressBar (iteration, total, prefix = '', suffix = '',decimals = 1, length = 100, fill = '#'):
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print'\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix),
+    sys.stdout.flush()
+    # Print New Line on Complete                                                                                                                                                                                                              
+    if iteration == total:
+        print()
 
 LOG_FILENAME = 'NER_logging.out'
 # Set up a specific logger with our desired output level
@@ -85,6 +95,7 @@ for nFold, (train_index, test_index) in enumerate(kf.split(data)):
         # wordData = 
         batchX = np.array_split(X_train, 6)
         batchY = np.array_split(y_train, 6)
+        epochLoss = 0
         for batchInd,batchElement in enumerate(batchX):
             totalLoss = 0
             for index,sentenceTrain in enumerate(batchElement): #dsets_loaders['train']
@@ -105,32 +116,45 @@ for nFold, (train_index, test_index) in enumerate(kf.split(data)):
                 # Step 3. Run our forward pass.
                 neg_log_likelihood = model.neg_log_likelihood(inputs, targets) #/batchSize
                 totalLoss += neg_log_likelihood
-                
-                Log = "nFold: {}, Epoch: {}, Batch: {}, sentence_ind: {}, neg_log: {}\n".format(nFold, epoch, batchInd, index, neg_log_likelihood[0])
+                Log = "nFold: {}, Epoch: {}, Batch: {}\n".format(nFold, epoch, batchInd)
                 print(Log)
+                printProgressBar (index, 63)
+                # print '\r[{0}]'.format('#'*(index/63))
                 logging.debug(Log)
                 # Step 4. Compute the loss, gradients, and update the parameters by
             # calling optimizer.step()
-            totalLoss = totalLoss/16
-            totalLoss.backward()
+            epochLoss += totalLoss
+            gradientLoss = totalLoss/16
+            gradientLoss.backward()
             # neg_log_likelihood.backward()
             optimizer.step()
 
-
-        print("Loss for this Epoch: {}".format(totalLoss/np.shape(X_train)[0]))
+        
         confusionMatrix = np.zeros([7,7])
+        valLoss = 0
         for index,testTrain in enumerate(X_test):
             embedded_sentence = torch.from_numpy(np.asarray([word2vec.wv[w] for w in testTrain]))
             printSentence = ""
             for w in testTrain:
                 printSentence = printSentence + " " + w
 
-            targets = torch.LongTensor([t for t in y_test[index]]).numpy()
+            targets = torch.LongTensor([t for t in y_test[index]])
+            inputs, labels = autograd.Variable(embedded_sentence), autograd.Variable(targets)
+            valLoss += model.neg_log_likelihood(inputs, targets)
             output = np.asarray(model(autograd.Variable(embedded_sentence))[1])
-            for indices, tag in enumerate(targets):
+            for indices, tag in enumerate(targets.numpy()):
                 confusionMatrix[tag, output[indices]] += 1 
             # print("Sentence:\n{}\nTag:\n{}\nPredict:\n{}".format(printSentence, targets.numpy(), np.asarray(output)))
-            print("Sentence:\n{}\nTag:\n{}\nPredict:\n{}".format(printSentence, targets, output))
+            print("Sentence:\n{}\nTag:\n{}\nPredict:\n{}".format(printSentence, targets.numpy(), output))
+
+        trainLoss = epochLoss/np.shape(X_train)[0]
+        validationLoss = valLoss/np.shape(X_test)[0]
+        print("Epoch: {}, TrainLoss: {}, ValidationLoss: {}".format(epoch, trainLoss.data.numpy(), validationLoss.data.numpy()))
+        with open("performance.csv", 'a') as csvFile:
+            writer = csv.writer(csvFile)
+            # writer.writerow(["Epoch","TrainLoss","ValidationLoss","None","B-LOC","I-LOC","B-ORG","I-ORG","B-PER","I-PER"])
+            writer.writerow([nFold, epoch, trainLoss.data.numpy()[0], validationLoss.data.numpy()[0]]) #"None","B-LOC","I-LOC","B-ORG","I-ORG","B-PER","I-PER"])
+            csvFile.close()
         
 # We got it!
 #While there are consecutives NNP, make that inot 1 entity

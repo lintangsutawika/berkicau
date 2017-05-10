@@ -4,7 +4,7 @@ import nltk
 
 class findEntity(object):
     """docstring for findEntity"""
-    def __init__(self, dir="./Training/",filename="training_data_new.txt"):
+    def __init__(self, dir="./Datasets/",filename="training_data_new.txt"):
         self.corpus = re.split('\r\n',open(dir+filename, "rb").read())
         self.corpus.pop(-1)
         self.Types = ["PERSON","LOCATION","ORGANIZATION"]
@@ -147,18 +147,27 @@ class findEntity(object):
         if corpus == None:
             corpus = self.corpus
         
-        _temp = self.removeURL()
+        _temp = self.removeURL(corpus)
         _temp = self.renameUser(_temp)
         # _temp = self.removeEnamex(_temp)
         _temp = self.removeHashtag(_temp)
         _temp = self.removeEmoticon(_temp)
+        _temp = self.addSpacingEnamex(_temp)
         return _temp
 
     def corpus2BIO(self, mode="withIntermediate" ,corpus=None):
-        if corpus== None:
+        if corpus == None:
             corpus = self.corpus
+            _temp = self.removeURL()
 
-        _temp = self.removeURL()
+        # elif type(corpus) == tuple:
+            # _tempData, _tempTags = corpus
+            # _temp = self.removeURL(_tempData)
+
+        else:
+            _tempData = corpus
+            _temp = self.removeURL(_tempData)
+
         _temp = self.renameUser(_temp)
         _temp = self.removeHashtag(_temp)
         _temp = self.removeEmoticon(_temp)
@@ -228,7 +237,7 @@ class findEntity(object):
 
             tags.append(tagSentence)
             dataset.append(tempSentence)
-        return [tags, dataset]
+        return (dataset, tags)
 
 
 if __name__ == '__main__':

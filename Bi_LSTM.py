@@ -33,7 +33,7 @@ def log_sum_exp(vec):
 
 def exp_lr_scheduler(optimizer, epoch, init_lr=0.1, lr_decay_epoch=100):
     """Decay learning rate by a factor of 0.1 every lr_decay_epoch epochs."""
-    lr = init_lr * (0.1**(epoch // lr_decay_epoch))
+    lr = init_lr * (0.5**(epoch // lr_decay_epoch))
 
     if epoch % lr_decay_epoch == 0:
         print('LR is set to {}'.format(lr))
