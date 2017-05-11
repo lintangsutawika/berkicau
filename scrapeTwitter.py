@@ -89,7 +89,8 @@ if __name__ == '__main__':
 	ids = []
 	initialUser = username
 	maxFollowers = 150000
-	
+	# tweepy.Cursor(api.search, q='cricket', geocode="-22.9122,-43.2302,1km").items(10)
+
 	while(True):
 		try:
 			for i,items in enumerate(tweepy.Cursor(tweet.api.followers_ids, screen_name=initialUser).items(maxFollowers)):

@@ -4,7 +4,7 @@ import nltk
 
 class findEntity(object):
     """docstring for findEntity"""
-    def __init__(self, dir="./Training/",filename="training_data_new.txt"):
+    def __init__(self, dir="./Datasets/",filename="training_data_new.txt"):
         self.corpus = re.split('\r\n',open(dir+filename, "rb").read())
         self.corpus.pop(-1)
         self.Types = ["PERSON","LOCATION","ORGANIZATION"]
@@ -147,18 +147,24 @@ class findEntity(object):
         if corpus == None:
             corpus = self.corpus
         
-        _temp = self.removeURL()
+        _temp = self.removeURL(corpus)
         _temp = self.renameUser(_temp)
         # _temp = self.removeEnamex(_temp)
         _temp = self.removeHashtag(_temp)
         _temp = self.removeEmoticon(_temp)
+        _temp = self.addSpacingEnamex(_temp)
         return _temp
 
     def corpus2BIO(self, mode="withIntermediate" ,corpus=None):
-        if corpus== None:
+        setMode = mode
+        if corpus == None:
             corpus = self.corpus
+            _temp = self.removeURL()
 
-        _temp = self.removeURL()
+        else:
+            _tempData = corpus
+            _temp = self.removeURL(_tempData)
+
         _temp = self.renameUser(_temp)
         _temp = self.removeHashtag(_temp)
         _temp = self.removeEmoticon(_temp)
@@ -166,12 +172,12 @@ class findEntity(object):
 
         #Tagging index
         #"None"     : 0, 
-        #"B-LOC"    : 1, 
-        #"I-LOC"    : 2,
-        #"B-ORG"    : 3, 
-        #"I-ORG"    : 4,
-        #"B-PER"    : 5,          
-        #"I-PER"    : 6, 
+        #"B-PER"    : 1, 
+        #"I-PER"    : 2,
+        #"B-LOC"    : 3, 
+        #"I-LOC"    : 4,
+        #"B-ORG"    : 5,          
+        #"I-ORG"    : 6, 
         #START_TAG  : 7, 
         #STOP_TAG   : 8
 
@@ -188,15 +194,21 @@ class findEntity(object):
                     tagSentence.append(1)
                     tempSentence[index] = re.sub( "type_person_",'',words)
                 elif "type_location_" in words:
-                    tagSentence.append(3)
+                    if setMode=="withIntermediate":
+                        tagSentence.append(3)
+                    else:
+                        tagSentence.append(2)
                     tempSentence[index] = re.sub( "type_location_",'',words)
                 elif "type_organization_" in words:
-                    tagSentence.append(5)
+                    if setMode=="withIntermediate":
+                        tagSentence.append(5)
+                    else:
+                        tagSentence.append(3)
                     tempSentence[index] = re.sub( "type_organization_",'',words)
                 elif index>0 and tempSentence[index-1]=="_enamex" and ("type_person_" not in words or "type_location_" not in words or "type_organization_" not in words):
                     tagSentence.append(0)
                 elif index>0 and tagSentence[index-1] != 0:
-                    if mode=="withIntermediate":
+                    if setMode=="withIntermediate":
                         if tagSentence[index-1] == 1 or tagSentence[index-1] == 2:
                             tagSentence.append(2)
                         elif tagSentence[index-1] == 3 or tagSentence[index-1] == 4:
@@ -228,7 +240,7 @@ class findEntity(object):
 
             tags.append(tagSentence)
             dataset.append(tempSentence)
-        return [tags, dataset]
+        return (dataset, tags)
 
 
 if __name__ == '__main__':
