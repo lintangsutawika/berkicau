@@ -5,7 +5,7 @@ from nltk.tag import tnt
 import cPickle
 
 class POStagger(object):
-	def __init__(self,dataset='./Training/Dataset_10000_kalimat.tsv'):
+	def __init__(self,dataset='./Datasets/Dataset_10000_kalimat.tsv'):
 		self.dataset = dataset
 
 	def preprocessing(self, dataset=None):
