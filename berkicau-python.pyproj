@@ -21,11 +21,26 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Datasets\Dataset_10000_kalimat.tsv" />
+    <Content Include="Datasets\MoreTweets.tsv" />
+    <Content Include="Datasets\training_data_contoh.txt" />
+    <Content Include="Datasets\training_data_new.txt" />
+    <Content Include="Datasets\word2vec.txt" />
+    <Content Include="Models\experiments.csv" />
+    <Content Include="Models\old_models\model_1_0.pth" />
+    <Content Include="Models\old_models\model_2.pth" />
+    <Content Include="Models\old_models\model_5_0.pth" />
+    <Content Include="Models\old_models\model_5_1.pth" />
+    <Content Include="Models\old_models\model_5_2.pth" />
+    <Content Include="Models\old_models\model_5_3.pth" />
+    <Content Include="Models\old_models\model_5_4.pth" />
+    <Content Include="Models\old_models\model_InitiallyWorking.pth" />
+    <Content Include="Models\old_models\model_state_InitiallyWorking.pth" />
     <Content Include="output.txt" />
-    <Content Include="Training\training_data_contoh.txt" />
-    <Content Include="Training\training_data_new.txt" />
+    <Content Include="scrape.sh" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bi_LSTM.py" />
     <Compile Include="entityTagger.py" />
     <Compile Include="POStagger.py" />
     <Compile Include="preprocess.py" />
@@ -33,6 +48,9 @@
     <Compile Include="scrapeTwitter.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Datasets\" />
+    <Folder Include="Models\" />
+    <Folder Include="Models\old_models\" />
     <Folder Include="Training" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
