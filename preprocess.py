@@ -6,7 +6,8 @@ class findEntity(object):
     """docstring for findEntity"""
     def __init__(self, dir="./Datasets/",filename="training_data_new.txt"):
         self.corpus = re.split('\r\n',open(dir+filename, "rb").read())
-        self.corpus.pop(-1)
+        if len(self.corpus[-1]) == 0:
+            self.corpus.pop(-1)            
         self.Types = ["PERSON","LOCATION","ORGANIZATION"]
         self.person = []
         self.location = []
@@ -21,12 +22,22 @@ class findEntity(object):
         return self.corpus
 
     def find_enamex(self, corpus=None):
-        if corpus== None:
-            corpus = self.corpus
+        self.person = []
+        self.location = []
+        self.organization = []
+        self.typeDicts = {
+            "PERSON":self.person,
+            "LOCATION":self.location,
+            "ORGANIZATION":self.organization
+            }  
+        if corpus == None:
+            opCorpus = self.corpus
+        else:
+            opCorpus = corpus
 
         for type in self.Types:
             start_string = "<ENAMEX TYPE=\"{}\">".format(type)
-            for _temp in corpus:
+            for _temp in opCorpus:
                 while True:
                     try:
                         start = _temp.index(start_string) + len(start_string)
@@ -107,7 +118,7 @@ class findEntity(object):
             corpus = self.corpus
     
         for _temp in corpus:
-            _temp = re.sub(emoticons_str, '', _temp)
+            _temp.replace(emoticons_str, '')
             _temp = re.sub(r'[^\x00-\x7F]', '', _temp)
             _new.append(_temp)
 
@@ -242,6 +253,47 @@ class findEntity(object):
             dataset.append(tempSentence)
         return (dataset, tags)
 
+    def getTokenized(self, corpus=None):
+        if corpus == None:
+            corpus = self.corpus
+            _temp = self.removeURL()
+        else:
+            _tempData = corpus
+            _temp = self.removeURL(_tempData)
+
+        _temp = self.renameUser(_temp)
+        _temp = self.removeHashtag(_temp)
+        _temp = self.removeEmoticon(_temp)
+        _temp = self.addSpacingEnamex(_temp)
+
+        tokenized = []
+        for sentences in _temp:
+            tempSentence = nltk.wordpunct_tokenize(sentences)
+
+            for index, words in enumerate(tempSentence):
+                if "TYPE_PERSON_" in words:
+                    tempSentence[index] = re.sub( "TYPE_PERSON_",'',words)
+                elif "TYPE_LOCATION_" in words:
+                    tempSentence[index] = re.sub( "TYPE_LOCATION_",'',words)
+                elif "TYPE_ORGANIZATION_" in words:
+                    tempSentence[index] = re.sub( "TYPE_ORGANIZATION_",'',words)
+
+            while True:
+                if '' in tempSentence:
+                    ind = tempSentence.index('')
+                    tempSentence.pop(ind)
+                else:
+                    break
+
+            while True:
+                if '_ENAMEX' in tempSentence:
+                    ind = tempSentence.index('_ENAMEX')
+                    tempSentence.pop(ind)
+                else:
+                    break
+
+            tokenized.append(tempSentence)
+        return tokenized
 
 if __name__ == '__main__':
     text = findEntity()

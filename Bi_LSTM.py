@@ -45,15 +45,13 @@ def exp_lr_scheduler(optimizer, epoch, init_lr=0.01, lr_decay_epoch=40):
 
 class BiLSTM_CRF(nn.Module):
 
-    def __init__(self, vocab_size, tag_to_ix, embedding_dim, hidden_dim):
+    def __init__(self, tag_to_ix, embedding_dim, hidden_dim):
         super(BiLSTM_CRF, self).__init__()
         self.embedding_dim = embedding_dim
         self.hidden_dim = hidden_dim
-        self.vocab_size = vocab_size
         self.tag_to_ix = tag_to_ix
         self.tagset_size = len(tag_to_ix)
 
-        self.word_embeds = nn.Embedding(vocab_size, embedding_dim)
         self.lstm = nn.LSTM(embedding_dim, hidden_dim // 2, num_layers=5, bidirectional=True)
 
         # Maps the output of the LSTM into tag space.
@@ -62,8 +60,7 @@ class BiLSTM_CRF(nn.Module):
 
         # Matrix of transition parameters.  Entry i,j is the score of
         # transitioning *to* i *from* j.
-        self.transitions = nn.Parameter(
-            torch.randn(self.tagset_size, self.tagset_size))
+        self.transitions = nn.Parameter(torch.randn(self.tagset_size, self.tagset_size))
 
         self.hidden = self.init_hidden()
 
@@ -171,7 +168,6 @@ class BiLSTM_CRF(nn.Module):
         forward_score = self._forward_alg(feats)
         gold_score = self._score_sentence(feats, tags)
         return forward_score - gold_score
-        # return gold_score - forward_score
 
     def forward(self, sentence):  # dont confuse this with _forward_alg above.
         self.hidden = self.init_hidden()
@@ -180,5 +176,4 @@ class BiLSTM_CRF(nn.Module):
 
         # Find the best path, given the features.
         score, tag_seq = self._viterbi_decode(lstm_feats)
-        # print(score)
         return score, tag_seq
