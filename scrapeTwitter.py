@@ -84,39 +84,133 @@ class tweetRetrieval(object):
 
 if __name__ == '__main__':
 
-	tweet = tweetRetrieval(consumer_key, consumer_secret, access_key, access_secret)
-	tweet.get_all_tweets(username)
-	ids = []
-	initialUser = username
-	maxFollowers = 150000
+	userbase = [
+	# "gm_gm",
+# "temponewsroom",
+# "yan_widjaya",
+# "Cherly7uno",
+# "devinaureel",
+# "dhitalarasati",
+# "TeukuRyz",
+# "yudhakhel",
+# "armandmaulana",
+# "sherylsheinafia",
+# "nabilahJKT48",
+# "SachaStevenson",
+# "pergijauh",
+# "jokoanwar",
+# "radityadika",
+# "poconggg",
+# "EkoSandjojo",
+# "ucu_hendarsah",
+# "AhmadErani",
+# "KemenDesa",
+# "jokowi",
+# "SBYudhoyono",
+# "dillabona",
+# "MhdFikri94",
+# "okezonenews",
+# "mediaIndonesia",
+# "antaranews",
+# "detikcom",
+# "wiranto1947",
+# "detiksport",
+# "selenamaria_",
+# "akmalmarhali ‏",
+# "gfnyindonesia ‏",
+# "JscmilaUpdate",
+# "Toto_B2W",
+# "persib",
+# "NIVEAMEN_ID",
+# "radotvalent",
+# "pekopik",
+# "ardynshufi",
+# "20DETIK",
+# "ayo_olahraga",
+# "krisnabayu24",
+# "Store_Persib",
+# "detikfinance",
+# "ardian26jp",
+# "KamidiaRadisti",
+# "Valencia_INA",
+# "ramdanilesta",
+# "Diahantika",
+# "asror4",
+# "haditsku",
+# "BNI",
+# "dedi_ir33",
+# "FOXSportsIndo",
+# "RHaryantoracing",
+# "ayo_olahraga1",
+# "AndiePeci",
+# "GadisDe22609103",
+# "AhokDjarot",
+# "addiems",
+# "aniesbaswedan",
+# "Pak_JK",
+# "BeritaJakarta",
+# "JSCLounge",
+# "BinaMargaDKI",
+# "DKIJakarta",
+# "Humas_DKI",
+# "kpu_dki",
+# "JokowiCentre",
+# "maswaditya",
+# "sherinasinna",
+# "bepe20",
+# "caitlinhald",
+# "PrillyBie",
+# "septriasa_acha",
+# "Young_Lexx",
+# "Arie_Kriting",
+# "_NjoyTempe",
+# "zarryhendrik",
+# "rezaoktovian",
+# "Jekibarr",
+# "anggika21",
+# "ikanatassa",
+# "abdurarsyad",
+# "indrayr",
+# "DMASIV",
+# "RaffiAhmadLagi",
+"sorayafilms",
+"R_AninJKT48",
+"leonagustine",
+"kaesangp",
+"bukalapak"]
+
+	for username in userbase:
+		print(username)
+		tweet = tweetRetrieval(consumer_key, consumer_secret, access_key, access_secret)
+		tweet.get_all_tweets(username)
+		ids = []
+
 	# tweepy.Cursor(api.search, q='cricket', geocode="-22.9122,-43.2302,1km").items(10)
 
-	while(True):
-		try:
-			for i,items in enumerate(tweepy.Cursor(tweet.api.followers_ids, screen_name=initialUser).items(maxFollowers)):
-				print("{}, {}".format(i,items))
-				ids.append(items)
-				# if i == maxFollowers:
-					# break
-		except:
-			print("waiting 15minutes")
-			break
+	# while(True):
+	# 	try:
+	# 		for i,items in enumerate(tweepy.Cursor(tweet.api.followers_ids, screen_name=initialUser).items(maxFollowers)):
+	# 			print("{}, {}".format(i,items))
+	# 			ids.append(items)
+	# 			# if i == maxFollowers:
+	# 				# break
+	# 	except:
+	# 		print("waiting 15minutes")
+	# 		break
 			# time.sleep(60 * 15)
 
-			
-
-	i = 0
-	while(True):
-		try:    
-			for i in range(i,len(ids)):
-				u = api.get_user(ids[i])
-				print(u.screen_name)
-				get_all_tweets(u.screen_name)
-		except:
-			if i == len(ids):
-				break
-			else:
-				i = i + 1
-				print("Cannot be pulled")
+	# i = 0
+	# while(True):
+	# 	try:    
+	# 		for i in range(i,len(ids)):
+	# 			u = api.get_user(ids[i])
+	# 			print(u.screen_name)
+	# 			get_all_tweets(u.screen_name)
+	# 	except:
+	# 		if i == len(ids):
+	# 			break
+	# 		else:
+	# 			i = i + 1
+	# 			print("Cannot be pulled")
 
 

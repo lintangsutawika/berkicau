@@ -49,6 +49,10 @@ class rujukKBBI(object):
 						return "NN"
 					elif tags['title'] == "Adjektiva: kata yang menjelaskan nomina atau pronomina":
 						return "JJ"
+					elif tags['title'] == "kependekan":
+						return "KP"
+					elif tags['title'] == "Partikel: kelas kata yang meliputi kata depan, kata sambung, kata seru, kata sandang, ucapan salam":
+						return "P"
 		except TypeError:
 			return "NOTFOUND"
 
