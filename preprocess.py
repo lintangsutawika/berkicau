@@ -7,7 +7,7 @@ class findEntity(object):
     def __init__(self, dir="./Datasets/",filename="training_data_new.txt"):
         self.corpus = re.split('\r\n',open(dir+filename, "rb").read())
         if len(self.corpus[-1]) == 0:
-            self.corpus.pop(-1)            
+            self.corpus.pop(-1)
         self.Types = ["PERSON","LOCATION","ORGANIZATION"]
         self.person = []
         self.location = []

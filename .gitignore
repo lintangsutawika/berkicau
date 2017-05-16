@@ -1,6 +1,6 @@
 #File Extensions
 *.pyc
-*.pic
+#*.pic
 
 #Login Credential
 kbbi_login
