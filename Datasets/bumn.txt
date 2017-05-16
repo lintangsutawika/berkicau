@@ -1,0 +1,282 @@
+Perum Perhutani
+Perum Prasarana Perikanan Samudera
+Inhutani I
+Inhutani II
+Inhutani III
+Inhutani IV
+Inhutani V
+Perikanan Nusantara
+Perkebunan Nusantara I
+Perkebunan Nusantara II
+Perkebunan Nusantara III
+Perkebunan Nusantara IV
+Perkebunan Nusantara V
+Perkebunan Nusantara VI
+Perkebunan Nusantara VII
+Perkebunan Nusantara VIII
+Perkebunan Nusantara IX
+Perkebunan Nusantara X
+Perkebunan Nusantara XI
+Perkebunan Nusantara XII
+Perkebunan Nusantara XIII
+Perkebunan Nusantara XIV
+Pertani
+Rajawali Nusantara Indonesia
+Sang Hyang Seri
+Aneka Tambang Tbk
+Bukit Asam Tbk
+Pertamina
+Sarana Karya
+Timah Tbk
+Perum Percetakan Negara Indonesia
+Perum Percetakan Uang Republik Indonesia
+Balai Pustaka
+Barata Indonesia
+Batan Teknologi
+Bio Farma
+Boma Bisma Indra
+Cambrics Primissima
+Dahana
+Dirgantara Indonesia
+Dok & Perkapalan Kodja Bahari
+Dok dan Perkapalan Surabaya
+Garam
+Indofarma Tbk
+Industri Gelas
+Industri Kapal Indonesia
+Industri Kereta Api
+Industri Sandang Nusantara
+Industri Telekomunikasi Indonesia
+Kertas Kraft Aceh
+Kertas Leces
+Kimia Farma Tbk
+Krakatau Steel Tbk
+LEN Industri
+PAL Indonesia
+Pindad
+Pradnya Paramita
+Pupuk Indonesia Holding Company
+Semen Baturaja
+Semen Gresik Tbk
+Semen Kupang
+Perusahaan Gas NegaraTbk
+Perusahaan Listrik Negara
+Perum Jasa Tirta I
+Perum Jasa Tirta II
+Perum Pembangunan Perumahan Nasional
+Adhi Karya Tbk
+Amarta Karya
+Brantas Abipraya
+Hutama Karya
+Istaka Karya
+Nindya Karya
+Pembangunan Perumahan
+Pengerukan Indonesia
+Wijaya Karya Tbk
+Perum Bulog
+Perusahaan Perdagangan Indonesia
+PP Berdikari
+Sarinah
+Perum DAMRI
+Perum Pengangkutan Penumpang Djakarta
+Angkasa Pura I
+Angkasa Pura II
+ASDP Indonesia Ferry
+Bhanda Ghara Reksa
+Djakarta Lloyd
+Garuda Indonesia Tbk
+Jasa Marga Tbk
+Kawasan Berikat Nusantara
+Kawasan Industri Makasar
+Kawasan Industri Medan
+Kawasan Industri Wijaya Kusuma
+Kereta Api Indonesia
+Merpati Nusantara Airlines
+Pelabuhan Indonesia I
+Pelabuhan Indonesia II
+Pelabuhan Indonesia III
+Pelabuhan Indonesia IV
+Pelayaran Nasional Indonesia
+Pengembangan Daerah Industri Pulau Batam
+Pos Indonesia
+Varuna Tirta Prakasya
+Hotel Indonesia Natour
+Perum LKBN ANTARA
+Perum Produksi Film Negara
+Telekomunikasi Indonesia Tbk
+Perum Jamkrindo
+Asabri
+Askrindo
+Asuransi Ekspor Indonesia
+Asuransi Jasa Indonesia
+Asuransi Jasa Rahardja
+Asuransi Jiwasraya
+Asuransi Kesehatan Indonesia
+Bahana PUI
+Bank Mandiri Tbk
+Bank Negara Indonesia Tbk
+Bank Rakyat Indonesia Tbk
+Bank Tabungan Negara Tbk
+Biro Klasifikasi Indonesia
+Danareksa
+Kliring Berjangka Indonesia
+PANN Multi Finance
+Pegadaian
+Permodalan Nasional Madani
+Perusahaan Pengelola Aset
+Reasuransi Umum Indonesia
+Taspen
+Jamsostek
+Bali Tourism & Development Corporation
+TWC Borobudur, Prambanan dan Ratu Boko
+Bina Karya
+Biro Klasifikasi Indonesia
+Energy Management Indonesia
+Indah Karya
+Indra Karya
+Sucofindo
+Survey Udara Penas
+Surveyor Indonesia
+Virama Karya
+Yodya Karya
+Perum Perhutani
+Perum Prasarana Perikanan Samudera
+PT Inhutani I
+PT Inhutani II
+PT Inhutani III
+PT Inhutani IV
+PT Inhutani V
+PT Perikanan Nusantara
+PT Perkebunan Nusantara I
+PT Perkebunan Nusantara II
+PT Perkebunan Nusantara III
+PT Perkebunan Nusantara IV
+PT Perkebunan Nusantara V
+PT Perkebunan Nusantara VI
+PT Perkebunan Nusantara VII
+PT Perkebunan Nusantara VIII
+PT Perkebunan Nusantara IX
+PT Perkebunan Nusantara X
+PT Perkebunan Nusantara XI
+PT Perkebunan Nusantara XII
+PT Perkebunan Nusantara XIII
+PT Perkebunan Nusantara XIV
+PT Pertani
+PT Rajawali Nusantara Indonesia
+PT Sang Hyang Seri
+PT Aneka Tambang Tbk
+PT Bukit Asam Tbk
+PT Pertamina
+PT Sarana Karya
+PT Timah Tbk
+Perum Percetakan Negara Indonesia
+Perum Percetakan Uang Republik Indonesia
+PT Balai Pustaka
+PT Barata Indonesia
+PT Batan Teknologi
+PT Bio Farma
+PT Boma Bisma Indra
+PT Cambrics Primissima
+PT Dahana
+PT Dirgantara Indonesia
+PT Dok & Perkapalan Kodja Bahari
+PT Dok dan Perkapalan Surabaya
+PT Garam
+PT Indofarma Tbk
+PT Industri Gelas
+PT Industri Kapal Indonesia
+PT Industri Kereta Api
+PT Industri Sandang Nusantara
+PT Industri Telekomunikasi Indonesia
+PT Kertas Kraft Aceh
+PT Kertas Leces
+PT Kimia Farma Tbk
+PT Krakatau Steel Tbk
+PT LEN Industri
+PT PAL Indonesia
+PT Pindad
+PT Pradnya Paramita
+PT Pupuk Indonesia Holding Company
+PT Semen Baturaja
+PT Semen Gresik Tbk
+PT Semen Kupang
+PT Perusahaan Gas NegaraTbk
+PT Perusahaan Listrik Negara
+Perum Jasa Tirta I
+Perum Jasa Tirta II
+Perum Pembangunan Perumahan Nasional
+PT Adhi Karya Tbk
+PT Amarta Karya
+PT Brantas Abipraya
+PT Hutama Karya
+PT Istaka Karya
+PT Nindya Karya
+PT Pembangunan Perumahan
+PT Pengerukan Indonesia
+PT Wijaya Karya Tbk
+Perum Bulog
+PT Perusahaan Perdagangan Indonesia
+PT PP Berdikari
+PT Sarinah
+Perum DAMRI
+Perum Pengangkutan Penumpang Djakarta
+PT Angkasa Pura I
+PT Angkasa Pura II
+PT ASDP Indonesia Ferry
+PT Bhanda Ghara Reksa
+PT Djakarta Lloyd
+PT Garuda Indonesia Tbk
+PT Jasa Marga Tbk
+PT Kawasan Berikat Nusantara
+PT Kawasan Industri Makasar
+PT Kawasan Industri Medan
+PT Kawasan Industri Wijaya Kusuma
+PT Kereta Api Indonesia
+PT Merpati Nusantara Airlines
+PT Pelabuhan Indonesia I
+PT Pelabuhan Indonesia II
+PT Pelabuhan Indonesia III
+PT Pelabuhan Indonesia IV
+PT Pelayaran Nasional Indonesia
+PT Pengembangan Daerah Industri Pulau Batam
+PT Pos Indonesia
+PT Varuna Tirta Prakasya
+PT Hotel Indonesia Natour
+Perum LKBN ANTARA
+Perum Produksi Film Negara
+PT Telekomunikasi Indonesia Tbk
+Perum Jamkrindo
+PT Asabri
+PT Askrindo
+PT Asuransi Ekspor Indonesia
+PT Asuransi Jasa Indonesia
+PT Asuransi Jasa Rahardja
+PT Asuransi Jiwasraya
+PT Asuransi Kesehatan Indonesia
+PT Bahana PUI
+PT Bank Mandiri Tbk
+PT Bank Negara Indonesia Tbk
+PT Bank Rakyat Indonesia Tbk
+PT Bank Tabungan Negara Tbk
+PT Biro Klasifikasi Indonesia
+PT Danareksa
+PT Kliring Berjangka Indonesia
+PT PANN Multi Finance
+PT Pegadaian
+PT Permodalan Nasional Madani
+PT Perusahaan Pengelola Aset
+PT Reasuransi Umum Indonesia
+PT Taspen
+PT Jamsostek
+PT Bali Tourism & Development Corporation
+PT TWC Borobudur, Prambanan dan Ratu Boko
+PT Bina Karya
+PT Biro Klasifikasi Indonesia
+PT Energy Management Indonesia
+PT Indah Karya
+PT Indra Karya
+PT Sucofindo
+PT Survey Udara Penas
+PT Surveyor Indonesia
+PT Virama Karya
+PT Yodya Karya

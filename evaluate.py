@@ -5,24 +5,13 @@ import nltk
 import gensim
 import string
 import numpy as np
-from sklearn.model_selection import KFold
 
-import POStagger
 from preprocess import findEntity
 
-import Bi_LSTM
-from Bi_LSTM import BiLSTM_CRF
-
-from prepareData import prepareData 
-
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.autograd as autograd
 
 class evaluate(object):
     """docstring for evaluate"""
-    def __init__(self,filename=None):
+    def __init__(self, dir="./Datasets/", filename=None):
         super(evaluate, self).__init__()
         if filename==None:
             self.text = findEntity()
@@ -86,17 +75,13 @@ class evaluate(object):
         punctuations = list(string.punctuation)
         originalTokens = self.text.getTokenized()
         originalText = self.text.corpus
-
+        outputText = originalText
         for sentenceIndex,eachSentence in enumerate(allPredictions):
-            tokenIndex = 0
+            currentIndex = 0
+            endTagIndex = (len(eachSentence)-1)
+            currentSentence = outputText[sentenceIndex]
             for tagIndex, eachTag in enumerate(eachSentence):
                 currentToken = originalTokens[sentenceIndex][tagIndex]
-                # if re.match("^[A-Za-z0-9]*$",currentToken):
-                #     pass
-                # else:
-                #     eachTag = 0
-                #     eachSentence[tagIndex] = 0
-
                 if mode == "withIntermediate":
                     if eachTag == 0:
                         pass
@@ -108,75 +93,122 @@ class evaluate(object):
                         pass
                 else:
                     if eachTag == 1:
-                        if tagIndex == 0 or eachSentence[tagIndex-1] != 1:
-                            currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                            originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex)] + "<ENAMEX TYPE=\"PERSON\">" + originalText[sentenceIndex][(tokenIndex+currentIndex)::]
-                            
-                            if (tagIndex != (len(eachSentence)-1) and eachSentence[tagIndex + 1] != 1) or tagIndex == (len(eachSentence)-1):
-                                currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                                originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex+len(currentToken))] + "</ENAMEX>" + originalText[sentenceIndex][(tokenIndex+currentIndex+len(currentToken))::]
-                            currentIndex = originalText[sentenceIndex].index(currentToken)
-                            tokenIndex = currentIndex + len(currentToken)
-                        elif tagIndex != (len(eachSentence)-1) and eachSentence[tagIndex - 1] == 1 and eachSentence[tagIndex + 1] == 1:
-                            pass
-                        elif (tagIndex != (len(eachSentence)-1) and eachSentence[tagIndex + 1] != 1):
-                            currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                            originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex+len(currentToken))] + "</ENAMEX>" + originalText[sentenceIndex][(tokenIndex+currentIndex+len(currentToken))::]
-                            currentIndex = originalText[sentenceIndex].index(currentToken)
-                            tokenIndex = currentIndex + len(currentToken)
-                        elif tagIndex == (len(eachSentence)-1):
-                            currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                            originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex+len(currentToken))] + "</ENAMEX>" + originalText[sentenceIndex][(tokenIndex+currentIndex+len(currentToken))::]
-                            currentIndex = originalText[sentenceIndex].index(currentToken)
-                            tokenIndex = currentIndex + len(currentToken)
+                        if tagIndex == 0: #At beginning
+                            currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                            currentSentence = currentSentence[0:currentIndex] + "<ENAMEX TYPE=\"PERSON\">" + currentSentence[currentIndex::]
+                            tempIndex = currentIndex+22+len(currentToken)
+                            if eachSentence[tagIndex+1] != 1:
+                                currentSentence = currentSentence[0:tempIndex] + "</ENAMEX>" + currentSentence[tempIndex::]
+                                currentIndex = tempIndex + 9
+                            else:
+                                currentIndex = tempIndex
+                        elif 0<tagIndex and tagIndex<endTagIndex: #At middle
+                            if eachSentence[tagIndex-1] == 1: #Previous word tag is the same
+                                if eachSentence[tagIndex+1] == 1: #Next word tag is the same
+                                    pass #No need to insert tag
+                                elif eachSentence[tagIndex+1] != 1: #Next word tag is NOT the same, the current word is an end word
+                                    currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                    currentIndex = currentIndex+len(currentToken)
+                                    currentSentence = currentSentence[0:currentIndex] + "</ENAMEX>" + currentSentence[currentIndex::]
+                            elif eachSentence[tagIndex-1] != 1: #Previous word tag is NOT the same, the current word is a start word
+                                currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                currentSentence = currentSentence[0:currentIndex] + "<ENAMEX TYPE=\"PERSON\">" + currentSentence[currentIndex::]
+                                tempIndex = currentIndex+22+len(currentToken)
+                                if eachSentence[tagIndex+1] != 1:
+                                    currentSentence = currentSentence[0:tempIndex] + "</ENAMEX>" + currentSentence[tempIndex::]
+                                    currentIndex = tempIndex + 9
+                                else:
+                                    currentIndex = tempIndex
+                        elif tagIndex == endTagIndex: #At end
+                            if eachSentence[tagIndex-1] != 1:
+                                currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                currentSentence = currentSentence[0:currentIndex] + "<ENAMEX TYPE=\"PERSON\">" + currentSentence[currentIndex::]
+                                tempIndex = currentIndex+22+len(currentToken)
+                                currentSentence = currentSentence[0:tempIndex] + "</ENAMEX>" + currentSentence[tempIndex::]
+                            elif eachSentence[tagIndex-1] == 1: #Previous word tag is the same
+                                currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                currentIndex = currentIndex+len(currentToken)
+                                currentSentence = currentSentence[0:currentIndex] + "</ENAMEX>" + currentSentence[currentIndex::]
+                    elif eachTag == 2:
+                        if tagIndex == 0: #At beginning
+                            currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                            currentSentence = currentSentence[0:currentIndex] + "<ENAMEX TYPE=\"LOCATION\">" + currentSentence[currentIndex::]
+                            tempIndex = currentIndex+24+len(currentToken)
+                            if eachSentence[tagIndex+1] != 2:
+                                currentSentence = currentSentence[0:tempIndex] + "</ENAMEX>" + currentSentence[tempIndex::]
+                                currentIndex = tempIndex + 9
+                            else:
+                                currentIndex = tempIndex
+                        elif 0<tagIndex and tagIndex<endTagIndex: #At middle
+                            if eachSentence[tagIndex-1] == 2: #Previous word tag is the same
+                                if eachSentence[tagIndex+1] == 2: #Next word tag is the same
+                                    pass #No need to insert tag
+                                elif eachSentence[tagIndex+1] != 2: #Next word tag is NOT the same, the current word is an end word
+                                    currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                    currentIndex = currentIndex+len(currentToken)
+                                    currentSentence = currentSentence[0:currentIndex] + "</ENAMEX>" + currentSentence[currentIndex::]
 
-                    if eachTag == 2:
-                        if tagIndex == 0 or eachSentence[tagIndex-1] != 2:
-                            currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                            originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex)] + "<ENAMEX TYPE=\"LOCATION\">" + originalText[sentenceIndex][(tokenIndex+currentIndex)::]
-                            
-                            if (tagIndex != (len(eachSentence)-1) and eachSentence[tagIndex + 1] != 2) or tagIndex == (len(eachSentence)-1):
-                                currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                                originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex+len(currentToken))] + "</ENAMEX>" + originalText[sentenceIndex][(tokenIndex+currentIndex+len(currentToken))::]
-                            currentIndex = originalText[sentenceIndex].index(currentToken)
-                            tokenIndex = currentIndex + len(currentToken)
-                        elif tagIndex != (len(eachSentence)-1) and eachSentence[tagIndex - 1] == 2 and eachSentence[tagIndex + 1] == 2:
-                            pass
-                        elif (tagIndex != (len(eachSentence)-1) and eachSentence[tagIndex + 1] != 2):
-                            currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                            originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex+len(currentToken))] + "</ENAMEX>" + originalText[sentenceIndex][(tokenIndex+currentIndex+len(currentToken))::]
-                            currentIndex = originalText[sentenceIndex].index(currentToken)
-                            tokenIndex = currentIndex + len(currentToken)
-                        elif tagIndex == (len(eachSentence)-1):
-                            currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                            originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex+len(currentToken))] + "</ENAMEX>" + originalText[sentenceIndex][(tokenIndex+currentIndex+len(currentToken))::]
-                            currentIndex = originalText[sentenceIndex].index(currentToken)
-                            tokenIndex = currentIndex + len(currentToken)
+                            elif eachSentence[tagIndex-1] != 2: #Previous word tag is NOT the same, the current word is a start word
+                                currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                currentSentence = currentSentence[0:currentIndex] + "<ENAMEX TYPE=\"LOCATION\">" + currentSentence[currentIndex::]
+                                tempIndex = currentIndex+24+len(currentToken)
+                                if eachSentence[tagIndex+1] != 2:
+                                    currentSentence = currentSentence[0:tempIndex] + "</ENAMEX>" + currentSentence[tempIndex::]
+                                    currentIndex = tempIndex + 9
+                                else:
+                                    currentIndex = tempIndex
+                        elif tagIndex == endTagIndex: #At end
+                            if eachSentence[tagIndex-1] != 2:
+                                currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                currentSentence = currentSentence[0:currentIndex] + "<ENAMEX TYPE=\"LOCATION\">" + currentSentence[currentIndex::]
+                                tempIndex = currentIndex+24+len(currentToken)
+                                currentSentence = currentSentence[0:tempIndex] + "</ENAMEX>" + currentSentence[tempIndex::]
+                            elif eachSentence[tagIndex-1] == 2: #Previous word tag is the same
+                                currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                currentIndex = currentIndex+len(currentToken)
+                                currentSentence = currentSentence[0:currentIndex] + "</ENAMEX>" + currentSentence[currentIndex::]      
 
-                    if eachTag == 3:
-                        if tagIndex == 0 or eachSentence[tagIndex-1] != 3:
-                            currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                            originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex)] + "<ENAMEX TYPE=\"ORGANIZATION\">" + originalText[sentenceIndex][(tokenIndex+currentIndex)::]
-                            
-                            if (tagIndex != (len(eachSentence)-1) and eachSentence[tagIndex + 1] != 3) or tagIndex == (len(eachSentence)-1):
-                                currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                                originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex+len(currentToken))] + "</ENAMEX>" + originalText[sentenceIndex][(tokenIndex+currentIndex+len(currentToken))::]
-                            currentIndex = originalText[sentenceIndex].index(currentToken)
-                            tokenIndex = currentIndex + len(currentToken)
-                        elif tagIndex != (len(eachSentence)-1) and eachSentence[tagIndex - 1] == 3 and eachSentence[tagIndex + 1] == 3:
-                            pass
-                        elif (tagIndex != (len(eachSentence)-1) and eachSentence[tagIndex + 1] != 1):
-                            currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                            originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex+len(currentToken))] + "</ENAMEX>" + originalText[sentenceIndex][(tokenIndex+currentIndex+len(currentToken))::]
-                            currentIndex = originalText[sentenceIndex].index(currentToken)
-                            tokenIndex = currentIndex + len(currentToken)
-                        elif tagIndex == (len(eachSentence)-1):
-                            currentIndex = originalText[sentenceIndex][tokenIndex::].index(currentToken)
-                            originalText[sentenceIndex] = originalText[sentenceIndex][0:tokenIndex] + originalText[sentenceIndex][tokenIndex:(tokenIndex+currentIndex+len(currentToken))] + "</ENAMEX>" + originalText[sentenceIndex][(tokenIndex+currentIndex+len(currentToken))::]
-                            currentIndex = originalText[sentenceIndex].index(currentToken)
-                            tokenIndex = currentIndex + len(currentToken)
+                    elif eachTag == 3:
+                        if tagIndex == 0: #At beginning
+                            currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                            currentSentence = currentSentence[0:currentIndex] + "<ENAMEX TYPE=\"ORGANIZATION\">" + currentSentence[currentIndex::]
+                            tempIndex = currentIndex+28+len(currentToken)
+                            if eachSentence[tagIndex+1] != 3:
+                                currentSentence = currentSentence[0:tempIndex] + "</ENAMEX>" + currentSentence[tempIndex::]
+                                currentIndex = tempIndex + 9
+                            else:
+                                currentIndex = tempIndex
+                        elif 0<tagIndex and tagIndex<endTagIndex: #At middle
+                            if eachSentence[tagIndex-1] == 3: #Previous word tag is the same
+                                if eachSentence[tagIndex+1] == 3: #Next word tag is the same
+                                    pass #No need to insert tag
+                                elif eachSentence[tagIndex+1] != 3: #Next word tag is NOT the same, the current word is an end word
+                                    currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                    currentIndex = currentIndex+len(currentToken)
+                                    currentSentence = currentSentence[0:currentIndex] + "</ENAMEX>" + currentSentence[currentIndex::]
 
-        return originalText
+                            elif eachSentence[tagIndex-1] != 3: #Previous word tag is NOT the same, the current word is a start word
+                                currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                currentSentence = currentSentence[0:currentIndex] + "<ENAMEX TYPE=\"ORGANIZATION\">" + currentSentence[currentIndex::]
+                                tempIndex = currentIndex+28+len(currentToken)
+                                if eachSentence[tagIndex+1] != 3:
+                                    currentSentence = currentSentence[0:tempIndex] + "</ENAMEX>" + currentSentence[tempIndex::]
+                                    currentIndex = tempIndex + 9
+                                else:
+                                    currentIndex = tempIndex
+                        elif tagIndex == endTagIndex: #At end
+                            if eachSentence[tagIndex-1] != 3:
+                                currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                currentSentence = currentSentence[0:currentIndex] + "<ENAMEX TYPE=\"ORGANIZATION\">" + currentSentence[currentIndex::]
+                                tempIndex = currentIndex+28+len(currentToken)
+                                currentSentence = currentSentence[0:tempIndex] + "</ENAMEX>" + currentSentence[tempIndex::]
+                            elif eachSentence[tagIndex-1] == 3: #Previous word tag is the same
+                                currentIndex = currentIndex + currentSentence[currentIndex::].index(currentToken) #Get left most index of an entry
+                                currentIndex = currentIndex+len(currentToken)
+                                currentSentence = currentSentence[0:currentIndex] + "</ENAMEX>" + currentSentence[currentIndex::]     
+            
+            outputText[sentenceIndex] = currentSentence
+        return outputText
 
     def getPredictionElements(self, outputText):
         predicted_corpus = outputText

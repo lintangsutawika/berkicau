@@ -1,0 +1,2 @@
+Embeddings/word2vec_withTweetData2_withTest_100Dimension.pic filter=lfs diff=lfs merge=lfs -text
+*.pic filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,105 @@
+name: pytorch
+channels: !!python/tuple
+- !!python/unicode
+  'defaults'
+dependencies:
+- bzip2=1.0.6=3
+- cffi=1.9.1=py27_0
+- cloog=0.18.0=0
+- cmake=3.6.3=0
+- curl=7.52.1=0
+- expat=2.1.0=0
+- gcc=4.8.5=7
+- gmp=6.1.0=0
+- hdf5=1.8.17=1
+- isl=0.12.2=0
+- jbig=2.1=0
+- jpeg=8d=2
+- libffi=3.2.1=1
+- libpng=1.6.27=0
+- libtiff=4.0.6=2
+- mkl=2017.0.1=0
+- mpc=1.0.3=0
+- mpfr=3.1.5=0
+- ncurses=5.9=10
+- numpy=1.12.1=py27_0
+- opencv=3.1.0=np112py27_1
+- openssl=1.0.2k=1
+- pip=9.0.1=py27_1
+- pycparser=2.17=py27_0
+- python=2.7.13=0
+- pyyaml=3.12=py27_0
+- readline=6.2=2
+- setuptools=27.2.0=py27_0
+- soumith::magma-cuda80=2.1.0=5
+- sqlite=3.13.0=0
+- tk=8.5.18=0
+- wheel=0.29.0=py27_0
+- xz=5.2.2=1
+- yaml=0.1.6=0
+- zlib=1.2.8=3
+- pip:
+  - backports.shutil-get-terminal-size==1.0.0
+  - beautifulsoup==3.2.1
+  - beautifulsoup4==4.6.0
+  - boto==2.46.1
+  - bs4==0.0.1
+  - bz2file==0.98
+  - cycler==0.10.0
+  - cymem==1.31.2
+  - cytoolz==0.8.2
+  - decorator==4.0.11
+  - dill==0.2.6
+  - enum34==1.1.6
+  - ftfy==4.4.2
+  - functools32==3.2.3.post2
+  - gensim==2.0.0
+  - html5lib==0.999999999
+  - ipython==5.3.0
+  - ipython-genutils==0.2.0
+  - matplotlib==2.0.0
+  - mechanize==0.3.3
+  - murmurhash==0.26.4
+  - nltk==3.2.2
+  - olefile==0.44
+  - pandas==0.19.2
+  - pathlib==1.0.1
+  - pathlib2==2.2.1
+  - pexpect==4.2.1
+  - pickleshare==0.7.4
+  - pillow==4.1.1
+  - plac==0.9.6
+  - preshed==1.0.0
+  - prompt-toolkit==1.0.14
+  - ptyprocess==0.5.1
+  - pycurl==7.43.0
+  - pygments==2.2.0
+  - pyparsing==2.2.0
+  - python-dateutil==2.6.0
+  - pytz==2017.2
+  - regex==2017.4.5
+  - requests==2.13.0
+  - sastrawi==1.0.1
+  - scandir==1.5
+  - scikit-learn==0.18.1
+  - scipy==0.19.0
+  - simplegeneric==0.8.1
+  - six==1.10.0
+  - smart-open==1.5.2
+  - spacy==1.8.2
+  - subprocess32==3.2.7
+  - termcolor==1.1.0
+  - thinc==6.5.2
+  - toolz==0.8.2
+  - torch==0.1.11+db1eb66
+  - torchnet==0.0.1
+  - torchtext==0.1.1
+  - torchvision==0.1.8
+  - tqdm==4.11.2
+  - traitlets==4.3.2
+  - ujson==1.35
+  - wcwidth==0.1.7
+  - webencodings==0.5.1
+  - wrapt==1.10.10
+prefix: /home/lintangsutawika/anaconda2/envs/pytorch
+
