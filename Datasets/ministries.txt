@@ -1,0 +1,65 @@
+Kemendagri
+Kementerian Dalam Negeri
+Kemenlu
+Kementerian Luar Negeri
+Kemenhan
+Kementerian Pertahanan
+Kemenag	Kementerian Agama
+Kementerian ESDM
+Kementerian Energi dan Sumber Daya Mineral
+Kemenkumham	Kementerian Hukum dan Hak Asasi Manusia
+Kemenparekraf
+Kementerian Pariwisata dan Ekonomi Kreatif
+Kemenhut
+Kementerian Kehutanan
+Kementerian KP
+Kementerian Kelautan dan Perikanan
+Kemenkes
+Kementerian Kesehatan
+Kemenkeu
+Kementerian Keuangan
+Kemenkominfo
+Kementerian Komunikasi dan Informatika
+Kementerian PU
+Kementerian Pekerjaan Umum
+Kemendikbud
+Kementerian Pendidikan dan Kebudayaan
+Kemendag
+Kementerian Perdagangan
+Kemenhub
+Kementerian Perhubungan
+Kemenperin
+Kementerian Perindustrian
+Kementan
+Kementerian Pertanian
+Kemensos
+Kementerian Sosial
+Kemenakertrans
+Kementerian Tenaga Kerja dan Transmigrasi
+Kemensetneg
+Kementerian Sekretariat Negara
+Kemenristek
+Kementerian Riset dan Teknologi
+Kementerian KUKM
+Kementerian Koperasi dan Usaha Kecil dan Menengah
+Kementerian LH
+Kementerian Lingkungan Hidup	
+Kementerian PPPA
+Kementerian Pemberdayaan Perempuan dan Perlindungan Anak
+Kementerian PANRB
+Kementerian Pendayagunaan Aparatur Negara dan Reformasi Birokrasi
+Kementerian PDT
+Kementerian Pembangunan Daerah Tertinggal
+Kementerian PPN
+Kementerian Perencanaan Pembangunan Nasional
+Kementerian BUMN
+Kementerian Badan Usaha Milik Negara
+Kemenpera
+Kementerian Perumahan Rakyat
+Komisi Yudisial
+Kementerian Pemuda dan Olah Raga
+Kemenko Kesra
+Kementerian Koordinator Bidang Kesejahteraan Rakyat
+Kemenko Ekon
+Kementerian Koordinator Bidang Perekonomian
+Kemenko Polhukam

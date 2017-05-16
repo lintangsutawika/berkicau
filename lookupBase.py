@@ -11,11 +11,13 @@ from entityTagger import entityTagger
 
 class lookUp(object):
     """docstring for lookUp"""
-    def __init__(self, testfile="test.txt", filenameNegara="negara.txt", filenameWilayah="provinsi.txt", dir="./Datasets/", withExtra=False, extrafile="extraTraining.txt"):
+    def __init__(self, testfile="test.txt", filenameInstansi="ministries.txt", filenameBUMN="bumn.txt", filenameNegara="negara.txt", filenameWilayah="provinsi.txt", dir="./Datasets/", withExtra=False, extrafile="extraTraining.txt"):
         super(lookUp, self).__init__()
         #Gazetter
         self.daftarNegara = re.split('\n',open(dir+filenameNegara, "rb").read())
         self.daftarWilayah = re.split('\n',open(dir+filenameWilayah, "rb").read())
+        self.daftarKementrian = re.split('\n',open(dir+filenameInstansi, "rb").read())
+        self.daftarBUMN = re.split('\n',open(dir+filenameBUMN, "rb").read())
 
         self.testCorpus = findEntity(filename=testfile)
         self.tokenizedTest = self.testCorpus.corpus2BIO()[0]
@@ -134,6 +136,26 @@ class lookUp(object):
                     for str2 in punct:
                         if str1+org+str2 in self.testCorpus.corpus[sentenceIndex].lower():
                             token = nltk.wordpunct_tokenize(org)
+                            index = self.tokenizedTest[sentenceIndex].index(token[0])
+                            output[index:index+len(token)] = 3
+                            break
+
+            for bumn in self.daftarBUMN:
+                designated = bumn.lower()
+                for str1 in punct:
+                    for str2 in punct:
+                        if str1+designated+str2 in self.testCorpus.corpus[sentenceIndex].lower():
+                            token = nltk.wordpunct_tokenize(designated)
+                            index = self.tokenizedTest[sentenceIndex].index(token[0])
+                            output[index:index+len(token)] = 3
+                            break
+
+            for kemen in self.daftarKementrian:
+                designated = kemen.lower()
+                for str1 in punct:
+                    for str2 in punct:
+                        if str1+designated+str2 in self.testCorpus.corpus[sentenceIndex].lower():
+                            token = nltk.wordpunct_tokenize(designated)
                             index = self.tokenizedTest[sentenceIndex].index(token[0])
                             output[index:index+len(token)] = 3
                             break

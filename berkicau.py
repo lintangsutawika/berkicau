@@ -79,7 +79,7 @@ elif experimentNum == 4:
     lookup = lookUp(testfile=directoryTestData+testData, withExtra=True)
     finalOutput = lookup.getLookUpPredictions()
 
-elif experimentNum in [5,6,7,8,9]:
+elif experimentNum in [5,6,7,8,9,10]:
     
     if experimentNum == 5:
         print("Experiment 5: Word2Vec from larger TweetData")
@@ -91,9 +91,16 @@ elif experimentNum in [5,6,7,8,9]:
        print("Experiment 8: Word2Vec from larger TweetData with Lookup Table and Stemmer+Kateglo Checker Ensemble Vote all Class")
     elif experimentNum == 9:
        print("Experiment 9: Word2Vec from larger TweetData with Weighted Lookup Table and Stemmer+Kateglo Checker Ensemble Vote all Class")
-    
+    elif experimentNum == 10:
+       print("Experiment 9: Word2Vec from larger TweetData with Weighted Extra Lookup Table and Stemmer+Kateglo Checker Ensemble Vote all Class (8)")
+
     if experimentNum in [6,7,8,9]:
         lookup = lookUp(testfile=directoryTestData+testData)
+        print("Getting prediction from lookup")
+        lookUpPredictions = lookup.getLookUpPredictions()
+
+    if experimentNum == 10:
+        lookup = lookUp(testfile=directoryTestData+testData,withExtra=True)
         print("Getting prediction from lookup")
         lookUpPredictions = lookup.getLookUpPredictions()
 
@@ -109,7 +116,7 @@ elif experimentNum in [5,6,7,8,9]:
 
 
 
-if experimentNum in [1,2,5,6,7,8,9]:
+if experimentNum in [1,2,5,6,7,8,9,10]:
     models = []
     #open model from a directory:
     for modelName in modelFolder:
@@ -145,22 +152,30 @@ if experimentNum in [1,2,5,6,7,8,9]:
             count3 = np.count_nonzero(out[:,i]==3)
             if experimentNum in [8,9]:
                 count0 = 10 - (count1+count2+count3)
+            elif experimentNum == 10:
+                count0 = 8 - (count1+count2+count3)
             
-            if experimentNum in [6,7,8,9]:
+            if experimentNum in [6,7,8,9,10]:
                 if lookUpPredictions[index][i] == 1:
                     if experimentNum == 9:
                         count1 += 4
+                    elif experimentNum == 10:
+                        count1 += 5
                 elif lookUpPredictions[index][i] == 2:
                     if experimentNum == 9:
                         count2 += 4
+                    elif experimentNum == 10:
+                        count1 += 5
                 elif lookUpPredictions[index][i] == 3:
                     if experimentNum == 9:
                         count3 += 4
+                    elif experimentNum == 10:
+                        count1 += 5
             
             if count1 == 0 and count2 == 0 and count3 == 0:
-                finalPrediction[i]
+                finalPrediction[i] = 0
             else:
-                if experimentNum in [8,9]:
+                if experimentNum in [8,9,10]:
                     finalPrediction[i] = np.argmax([count0, count1, count2, count3])
                 else:
                     finalPrediction[i] = np.argmax([count1, count2, count3]) + 1
@@ -180,7 +195,7 @@ if experimentNum in [1,2,5,6,7,8,9]:
                         if re.match("^[A-Za-z0-9.]*$",tokenizedTest[index][indWord]):
                             tempOut[indWord] = element
 
-            elif experimentNum in [8,9]:
+            elif experimentNum in [8,9,10]:
                 if element != 0:
                     # print("{}:{}".format(tokenizedTest[index][indWord], rujukan.jenis_kata(stemmer.stem(tokenizedTest[index][indWord]))))
                     wordType=rujukan.jenis_kata(stemmer.stem(tokenizedTest[index][indWord]))
@@ -192,7 +207,7 @@ if experimentNum in [1,2,5,6,7,8,9]:
                 else:
                     finalPrediction[indWord] = 0
 
-        if experimentNum in [6,7,8,9]:
+        if experimentNum in [6,7,8,9,10]:
             print("finalPrediction:\n{}\nlookupPrediction:\n{}\nfinalOutput:\n{}\n".format(finalPrediction, lookUpPredictions[index],tempOut))
         else:
             tempOut = finalPrediction

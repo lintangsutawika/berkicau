@@ -2,65 +2,22 @@
 
 Submition for CS Universitas Indonesia Named Entity Challenge for NLP Class 2017
 
-## Getting Started
+## Installing
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+1) Download and Install Miniconda
+wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh
+bash Miniconda2-latest-Linux-x86_64.sh
 
-### Prerequisites
+2) Set up conda environment with .yml in folder
+conda env create -f berkicau.yml
 
-What things you need to install the software and how to install them
+3) Try running
+python berkicau.py test.txt 9 (Experiment 9)
 
-```
-Give examples
-```
-
-### Installing
-
-A step by step series of examples that tell you have to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
 
 ## Authors
 
 * **Lintang Adyuta Sutawika** - *Initial work* - [lintangsutawika](https://github.com/lintangsutawika)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
 
