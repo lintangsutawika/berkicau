@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0ad4656f-8d30-4460-9b76-8007eea3a124}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>entityTagger.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+    <InterpreterVersion />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+    <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Datasets\Dataset_10000_kalimat.tsv" />
+    <Content Include="Datasets\MoreTweets.tsv" />
+    <Content Include="Datasets\training_data_contoh.txt" />
+    <Content Include="Datasets\training_data_new.txt" />
+    <Content Include="Datasets\word2vec.txt" />
+    <Content Include="Models\experiments.csv" />
+    <Content Include="Models\old_models\model_1_0.pth" />
+    <Content Include="Models\old_models\model_2.pth" />
+    <Content Include="Models\old_models\model_5_0.pth" />
+    <Content Include="Models\old_models\model_5_1.pth" />
+    <Content Include="Models\old_models\model_5_2.pth" />
+    <Content Include="Models\old_models\model_5_3.pth" />
+    <Content Include="Models\old_models\model_5_4.pth" />
+    <Content Include="Models\old_models\model_InitiallyWorking.pth" />
+    <Content Include="Models\old_models\model_state_InitiallyWorking.pth" />
+    <Content Include="output.txt" />
+    <Content Include="scrape.sh" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bi_LSTM.py" />
+    <Compile Include="entityTagger.py" />
+    <Compile Include="POStagger.py" />
+    <Compile Include="preprocess.py" />
+    <Compile Include="rujukKBBI.py" />
+    <Compile Include="scrapeTwitter.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Datasets\" />
+    <Folder Include="Models\" />
+    <Folder Include="Models\old_models\" />
+    <Folder Include="Training" />
+  </ItemGroup>
+  <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />
+</Project>
