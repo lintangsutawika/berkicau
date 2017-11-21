@@ -1,6 +1,6 @@
 # Berkicau Named Entity Recognition Program
 
-Submition for CS Universitas Indonesia Named Entity Challenge for NLP Class 2017
+Submission for CS Universitas Indonesia Named Entity Challenge for NLP Class 2017
 
 ## Installing
 
