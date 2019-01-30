@@ -3,7 +3,7 @@ import csv
 import sys
 import nltk
 import gensim
-import cPickle
+import _pickle as cPickle
 import numpy as np
 
 import POStagger
@@ -156,5 +156,5 @@ class prepareData(object):
 
 if __name__ == '__main__':
     nerData = prepareData()
-    toFeed = nerData.getDefaultData()
-    tagFeed = nerData.getDefaultTag()
+    #toFeed = nerData.getDefaultData()
+    #tagFeed = nerData.getDefaultTag()

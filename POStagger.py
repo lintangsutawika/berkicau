@@ -2,7 +2,7 @@ import nltk
 import re
 from nltk import word_tokenize
 from nltk.tag import tnt
-import cPickle
+import _pickle as cPickle
 
 class POStagger(object):
 	def __init__(self,dataset='./Datasets/Dataset_10000_kalimat.tsv'):
@@ -13,7 +13,7 @@ class POStagger(object):
 			dataset = self.dataset
 
 		f = open(dataset)
-		raw = f.read()
+		raw = f.read().decode('utf-8')
 		Segmented_pre_sentence = re.split('</kalimat>',raw)
 		Segmented_pre_sentence.pop(-1)
 		sentence_data = []
